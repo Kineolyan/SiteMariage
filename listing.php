@@ -3,18 +3,17 @@
 include_once "environment.php";
 
 if ($VISITOR->hasAccess("Listing")) {
+	
+Pager::generateHeaders('Liste des invités');
 ?>
 
-<html>
-<head>
-	<title>Listing des inscrits</title>
-</head>
-<body>
-	<h1>Listing</h1>
-</body>
-</html>
+<h1>Liste des invités</h1>
+<p>En cours de rédaction</p>
 
-<?php }
+<?php 
+Pager::generateFooter();
+
+}
 else {
 	include_once "include/acces.php";
 }

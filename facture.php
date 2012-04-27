@@ -3,19 +3,17 @@
 include_once "environment.php";
 
 if ($VISITOR->hasAccess("Facture")) {
+
+Pager::generateHeaders('Facture');
 ?>
 
-<html>
-<head>
-	<title>Page d'accueil</title>
-</head>
-<body>
-	<h1>Bienvenue sur la page d'accueil</h1>
-	<p>Loop in the page <a href="#">Accueil</a></p>
-</body>
-</html>
+<h1>Bienvenue sur la page d'accueil</h1>
+<p>Loop in the page <a href="#">Accueil</a></p>
 
-<?php }
+<?php 
+Pager::generateFooter();
+
+}
 else {
 	include_once "include/acces.php";
 }
