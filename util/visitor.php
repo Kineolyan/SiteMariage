@@ -1,10 +1,12 @@
 <?php 
 
-include_once "util/dba.php";
+include_once "dba.mysql.php";
 
 class Visitor {
 	private $m_db;
 	private $m_allowedPages;
+	
+	private $m_nom;
 	
 	private $m_isLogged;
 	private $m_isAdmin;
@@ -13,6 +15,8 @@ class Visitor {
 		$this->m_db = $db;
 		$this->getAllowedPages('anonymous');
 		
+		$this->m_nom = '';
+				
 		$this->m_isAdmin = false;
 		$this->m_isLogged = false;
 	}
@@ -27,6 +31,8 @@ class Visitor {
 	
 	public function db($db) {	$this->m_db = $db; }
 	
+	public function nom() {	return $this->m_nom;	}
+	
 	public function isLogged() {	return $this->m_isLogged; }
 	
 	public function isAdmin() {	return $this->m_isAdmin;	}
@@ -35,17 +41,30 @@ class Visitor {
 		return in_array($this->getPageId($page), $this->m_allowedPages);
 	}
 	
-	public function login($login, $password) {
+	public function manageConnection() {
+		if (isset($_POST['connexion'])) {
+			$login = $_POST['login'];
+			$password = $_POST['password'];
+			$this->login($login, $password);
+		}
+		else if (isset($_POST['deconnexion'])) {
+			$this->logout();
+		}
+	}
+	
+	private function login($login, $password) {
 		if (0<$this->m_db->count('users', '*', "login='$login' AND password='$password'")) {
 			$this->getAllowedPages($login);
+			$this->m_nom = $login;
 			$this->m_isLogged = true;
 		}
 		
 		return $this->m_isLogged;
 	}
 	
-	public function logout() {
+	private function logout() {
 		$this->getAllowedPages('anonymous');
+		$this->m_nom = '';
 		$this->m_isLogged = false;
 	}
 	
@@ -63,7 +82,7 @@ class Visitor {
 			return $response['id'];
 		}
 		else {
-			return -1;
+			return '-1';
 		}
 	}
 	
