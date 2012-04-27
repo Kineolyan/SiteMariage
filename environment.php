@@ -1,14 +1,16 @@
 <?php 
 
-include_once 'util/dba.php';
+include_once 'util/dba.mysql.php';
 include_once 'util/visitor.php';
 include_once 'util/pager.php';
 
 session_start();
 
+$usePDO = false;
+
 // Creation de la base de données
 if (isset($_GET['clear']) && 'session'==$_GET['clear']) {
-	$DB = new Dba();
+	$DB = $usePDO? new DbaPdo(): new DbaMysql();
 	$VISITOR = new Visitor($DB);
 	
 	$_SESSION['db'] = $DB;
@@ -17,7 +19,7 @@ if (isset($_GET['clear']) && 'session'==$_GET['clear']) {
 else {
 	
 	if (!isset($_SESSION['db'])) {
-		$_SESSION['db'] = new Dba();
+		$_SESSION['db'] = $usePDO? new DbaPdo(): new DbaMysql();
 	}
 	$DB = $_SESSION['db'];
 	
