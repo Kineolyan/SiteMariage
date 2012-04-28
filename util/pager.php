@@ -9,8 +9,10 @@ class Pager {
 	private $m_pageTitle;
 	private $m_content;
 
-	public function __construct($visitor, $page) {
-		$this->visitor = $visitor;
+	public function __construct($page) {
+		global $VISITOR;
+		
+		$this->visitor = $VISITOR;
 		$this->page = $page;
 		$this->m_title = '';
 		$this->m_pageTitle = '';
@@ -103,6 +105,7 @@ CONNECTION;
 <h1>Page à accés restreint</h1>
 <p>Retour à l'<a href="index.php">Accueil</a></p>
 BODY;
+		$content .= $this->connexionForm();
 		$content.= self::generateFooter();
 		
 		return $content;
