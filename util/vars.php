@@ -19,11 +19,21 @@ class Variables {
 		return htmlspecialchars($value);
 	}
 	
-	public function post($name) {
-		return $this->m_post[$name];
+	public function post($name, $type='') {
+		return $this->format($this->m_post[$name], $type);
 	}
 	
-	public function get($name) {
-		return $this->m_get[$name];
+	public function get($name, $type='') {
+		return $this->format($this->m_get[$name], $type);
+	}
+	
+	private function format($value, $type) {
+		switch ($type) {
+			case 'int':
+				return intval($value);
+				
+			default:
+				return $value;
+		}
 	}
 }
