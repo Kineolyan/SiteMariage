@@ -2,7 +2,7 @@
 
 include_once "environment.php";
 
-$page = new Pager($VISITOR, 'Facture');
+$page = new Pager('Facture');
 
 $page->title = 'Facture générale';
 $page->pageTitle = 'Facture générale';
