@@ -3,6 +3,8 @@
 include_once 'util/dba.mysql.php';
 include_once 'util/visitor.php';
 include_once 'util/pager.php';
+include_once 'util/liste.php';
+include_once 'util/vars.php';
 
 session_start();
 
@@ -32,5 +34,7 @@ else {
 		$VISITOR->db($DB);
 	}	
 }
+
+$VARS = new Variables();
 
 ?>
