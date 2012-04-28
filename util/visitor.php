@@ -1,6 +1,6 @@
 <?php 
 
-include_once "dba.mysql.php";
+include_once "dba/dba.mysql.php";
 
 class Visitor {
 	private $m_db;

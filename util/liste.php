@@ -1,6 +1,6 @@
 <?php
 
-include_once 'dba.mysql.php';
+include_once 'dba/dba.mysql.php';
 
 class Liste {
 	private $m_db;
@@ -38,13 +38,13 @@ class Liste {
 	/**
 	 * Génère le contenu d'une ligne dans le tableau pour un utilisateur
 	 * 
-	 * @param array $user contient les données sur l'utilisateur
+	 * @param array $data contient les données sur l'utilisateur
 	 * 
 	 * @return string contenant la ligne en HTML
 	 */
-	private function renderLine($user) {
-		$content = "$user[nom] $user[prenom] ";
-		switch ($user['statut']) {
+	private function renderLine($data) {
+		$content = "$data[nom] $data[prenom] ";
+		switch ($data['statut']) {
 			case 0:
 				$content.= '(Indécis)';
 				break;
@@ -66,11 +66,16 @@ class Liste {
 		return '<li>'.$content.'</li>';
 	}
 	
-	public function ajouterInvite() {
+	public function ajouterInvite($data) {
 		
 	}
 	
 	public function changerStatut() {
+		global $VARS;
 		
+		$this->m_db->update('invites',
+			array('statut', $VARS->get('statut', 'int')), 
+			'id='.$VARS->get('idInvite', 'int')
+		);
 	}
 }
