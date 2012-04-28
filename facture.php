@@ -2,20 +2,12 @@
 
 include_once "environment.php";
 
-if ($VISITOR->hasAccess("Facture")) {
+$page = new Pager($VISITOR, 'Facture');
 
-Pager::generateHeaders('Facture');
-?>
+$page->title = 'Facture générale';
+$page->pageTitle = 'Facture générale';
+$page->content = '<p>En cours de construction</p>';
 
-<h1>Bienvenue sur la page d'accueil</h1>
-<p>Loop in the page <a href="#">Accueil</a></p>
-
-<?php 
-Pager::generateFooter();
-
-}
-else {
-	include_once "include/acces.php";
-}
+$page->render();
 
 ?>

@@ -2,20 +2,11 @@
 
 include_once "environment.php";
 
-if ($VISITOR->hasAccess("Listing")) {
-	
-Pager::generateHeaders('Liste des invités');
-?>
+$page = new Pager($VISITOR, 'Listing');
+$page->title = 'Invités';
+$page->pageTitle = 'Liste des invités';
+$page->content = '<p>En cours de rédaction</p>';
 
-<h1>Liste des invités</h1>
-<p>En cours de rédaction</p>
-
-<?php 
-Pager::generateFooter();
-
-}
-else {
-	include_once "include/acces.php";
-}
+$page->render();
 
 ?>
