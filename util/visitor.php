@@ -22,7 +22,7 @@ class Visitor {
 	}
 	
 	public function __sleep() {
-		return array('m_allowedPages', 'm_isLogged', 'm_isAdmin');
+		return array('m_nom', 'm_allowedPages', 'm_isLogged', 'm_isAdmin');
 	}
 	
 	public function __wakeup() {
