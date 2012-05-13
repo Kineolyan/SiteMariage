@@ -26,6 +26,7 @@ class Pager {
 			);
 
 		$this->visitor->manageConnection();
+		ob_start();
 	}
 
 	public function __set($attribut, $valeur) {
@@ -127,34 +128,42 @@ CONNECTION;
 	// Génération de la page complète
 
 	function render() {
-		echo $this->visitor->hasAccess($this->page)?
-			$this->renderGranted():
+		$this->m_content = ob_get_contents();
+		ob_end_clean();
+		
+		if (!$this->visitor->hasAccess($this->page)) {
 			$this->renderDenied();
+		}
+		
+		ob_start();
+			require dirname(__FILE__).'/../../vues/layout.php';
+			$content = ob_get_contents();
+		ob_end_clean();
+		
+		echo $content;
 	}
 
 	private function renderGranted() {
-		$content = self::generateHeaders($this->m_title, $this->css);
+		//$content = self::generateHeaders($this->m_title, $this->css);
 
-		$content .= "<h1>{$this->m_pageTitle}</h1>";
-		$content .= $this->connexionForm();
-		$content .= $this->generateMenu();
-		$content .= "<div id='content'>{$this->m_content}</div>";
-		$content .= self::generateFooter($this->js);
+// 		$content .= "<h1>{$this->m_pageTitle}</h1>";
+// 		$content .= $this->connexionForm();
+// 		$content .= $this->generateMenu();
+// 		$content .= "<div id='content'>{$this->m_content}</div>";
+// 		$content .= self::generateFooter($this->js);
+
+		ob_start();
+			require dirname(__FILE__).'/../../vues/layout.php';
+		$content = ob_get_contents();
+		ob_end_clean();
 		
 		return $content;
 	}
 
 	private function renderDenied() {
-		$content = self::generateHeaders('Accès refusé');
-
-		$content.= <<<BODY
-<h1>Page à accés restreint</h1>
-<p>Retour à l'<a href="index.php">Accueil</a></p>
-BODY;
-		$content .= $this->connexionForm();
-		$content.= self::generateFooter();
-		
-		return $content;
+		$this->m_title = 'Accès refusé';
+		$this->m_pageTitle = 'Page à accés restreint';
+		$this->m_content = '';
 	}
 	
 	// Génération d'un composant de la page
