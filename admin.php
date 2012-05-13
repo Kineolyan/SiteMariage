@@ -10,11 +10,14 @@ $page->pageTitle = 'Page d\'administration du site';
 if ($page->visible()) {
 	switch ($VARS->post('action')) {
 		case 'update':
+			$id = $VARS->post('userId', 'int');
+			$access = $VARS->post('userAccess');
+			$adminStatus = $VARS->post('admin');
 			$DB->update('users', array(
-					'allowed_pages' => $VARS->post('userAccess'),
-					'admin' => ($VARS->post('admin', 'int'))
+					'allowed_pages' => $access[0],
+					'admin' => $adminStatus[0]
 				),
-				"id={$VARS->post('userId')}");
+				"id=$id");
 			break;
 	}
 }
@@ -37,13 +40,15 @@ $DB->endQuery();
 $usersForms = '';
 $DB->select('users', '*', '', array('orderBy'=>'login'));
 while ($user = $DB->fetch()) {
-	$form = new Form('userAccess');
+	$form = new Form('userAccess', $user['id']);
 	$htmlForm = $form->create('', '', 'accessForm');
-	$htmlForm.= $form->hidden('action', 'update');
-	$htmlForm.= $form->hidden('userId', $user['id']);
 	$htmlForm.= $form->input('userAccess', $user['login'], $user['allowed_pages']).'</br>';
 	$htmlForm.= $form->check('admin', 'admin', 
 			array('1'=> '1'==$user['admin']));
+	
+	$form->useId(false);
+	$htmlForm.= $form->hidden('action', 'update');
+	$htmlForm.= $form->hidden('userId', $user['id']);
 	$htmlForm.= $form->submit('', 'Mettre à jour');
 	$htmlForm.= $form->end();
 	
