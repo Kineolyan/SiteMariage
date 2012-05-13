@@ -1,6 +1,4 @@
-<?php 
-
-include_once "dba/dba.mysql.php";
+<?php
 
 class Visitor {
 	private $m_db;
@@ -57,6 +55,9 @@ class Visitor {
 			$this->getAllowedPages($login);
 			$this->m_nom = $login;
 			$this->m_isLogged = true;
+			
+			$visitor = $this->m_db->get('users', 'admin',  "login='$login'");
+			$this->m_isAdmin = '1'==$visitor['admin'];
 		}
 		
 		return $this->m_isLogged;
@@ -66,6 +67,7 @@ class Visitor {
 		$this->getAllowedPages('anonymous');
 		$this->m_nom = '';
 		$this->m_isLogged = false;
+		$this->m_isAdmin = false;
 	}
 	
 	private function getAllowedPages($login) {

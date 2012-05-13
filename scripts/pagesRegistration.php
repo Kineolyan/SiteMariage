@@ -1,26 +1,63 @@
 <?php
 
-include_once "../environment.php";
-
-$pagesList = array(
-		'Index',
-		'Infos',
-		'Listing',
-		'Facture'
-);
-
-foreach ($pagesList as $title) {
-	echo 'enregistrement de '.$title;
-	$DB->querySQL("SELECT COUNT(*) FROM pages WHERE title='".$title."';");
-	if (!$DB->fetch()) {
-		$DB->querySQL("INSERT INTO pages(title) VALUES ('{$title}');");
-		echo ' [OK]';
+function registerPage($db, $page, $ajax) {
+	if ($ajax) {
+		if (0==$db->count('pages', '*', "title='$page'")) {
+			$id = $db->insert('pages', array('title' => $page));
+			return json_encode(array(
+				'id' => $id, 'title' => $page
+			));
+		}
+		else {
+			return NULL;
+		}
 	}
 	else {
-		echo ' [done]';
+		echo 'enregistrement de '.$page;
+		if (0==$db->count('pages', '*', "title='$page'")) {
+			$db->insert("INSERT INTO pages(title) VALUES ('{$page}');");
+			echo ' [OK]';
+		}
+		else {
+			echo ' [done]';
+		}
+		echo '<br/>';
+	}	
+}
+
+function registerPages($db, $pages, $ajax) {
+	if ($ajax) {
+		foreach ($pages as $page=>$contenu) {
+			if (is_array($contenu)) {
+				$jsonMessage = registerPage($db, $page, true);
+				$json = registerPages($db, $contenu);
+				$json[] = $jsonMessage;
+				return $json;
+			}
+			else {
+				return array(registerPage($db, $contenu, true));
+			}
+		}
 	}
-	echo '<br/>';
-	$DB->endQuery();
+	else {
+		foreach ($pages as $page=>$contenu) {
+			if (is_array($contenu)) {
+				registerPage($db, $page, false);
+				registerPages($db, $contenu);
+			}
+			else {
+				registerPage($db, $contenu, false);
+			}
+		}
+	}
+}
+
+if ($VARS->isAjaxRequest()) {
+	$jsonArray = registerPages($DB, $pagesList, true);
+	echo empty($jsonArray)? '{}': json_encode($jsonArray);
+}
+else {
+	registerPages($DB, $pagesList, false);
 }
 
 // $inRegistrationProcess = true;

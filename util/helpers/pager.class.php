@@ -1,13 +1,16 @@
 <?php
 
-include_once 'visitor.php';
-
 class Pager {
 	private $visitor;
 	private $page;
 	private $m_title;
 	private $m_pageTitle;
 	private $m_content;
+	private $css;
+	private $js;
+	
+	static private $includePath = 'include/';
+	static public $baseUrl = 'mariage/';
 
 	public function __construct($page) {
 		global $VISITOR;
@@ -17,6 +20,10 @@ class Pager {
 		$this->m_title = '';
 		$this->m_pageTitle = '';
 		$this->m_content = '';
+		$this->css = array();
+		$this->js = array(
+				'javascript/jquery-1.7.2.min.js'
+			);
 
 		$this->visitor->manageConnection();
 	}
@@ -25,20 +32,54 @@ class Pager {
 		$this->{'m_' . $attribut} = $valeur;
 	}
 
-	static public function generateHeaders($pageTitle) {
+	public function __get($attribut) {
+		return $this->{'m_' . $attribut};
+	}
+	
+	public function addCss($file) {	
+		if (is_array($file)) {
+			$this->css = array_merge($this->css, $file);
+		}
+		else {
+			$this->css[] = $file;
+		}
+	}
+	
+	public function addJs($file) {
+		if (is_array($file)) {
+			$this->js = array_merge($this->js, $file);
+		}
+		else {
+			$this->js[] = $file;
+		}
+	}
+
+	static public function generateHeaders($pageTitle, $css=array()) {
+		$headerScripts = '';
+		foreach ($css as $header) {
+			$headerScripts.= "<link rel='stylesheet' href='$header' type='text/css'/>\n";
+		}
+		
 		return <<<HEADERS
 <html>
 <head>
 	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 	<title>$pageTitle</title>
+	{$headerScripts}
 </head>
 <body>		
 HEADERS;
 	}
 
-	static public function generateFooter() {
+	static public function generateFooter($scripts=array()) {
+		$htmlScripts = '';
+		foreach ($scripts as $script) {
+			$htmlScripts.= "<script type='text/javascript' src='$script'></script>";
+		}
+		
 		return <<<FOOTER
 </body>
+{$htmlScripts}
 </html>
 FOOTER;
 	}
@@ -51,6 +92,7 @@ FOOTER;
 	<li><a href="infos.php">Informations</a></li>
 	<li><a href="listing.php">Listing</a></li>
 	<li><a href="facture.php">Facture</a></li>
+	<li><a href="admin.php">Admin page</a></li>
 </ul>	
 MENU;
 	}
@@ -79,6 +121,10 @@ CONNECTION;
 CONNECTION;
 		}
 	}
+	
+	public function visible() {	return $this->visitor->hasAccess($this->page);	}
+	
+	// Génération de la page complète
 
 	function render() {
 		echo $this->visitor->hasAccess($this->page)?
@@ -87,13 +133,13 @@ CONNECTION;
 	}
 
 	private function renderGranted() {
-		$content = self::generateHeaders($this->m_title);
+		$content = self::generateHeaders($this->m_title, $this->css);
 
 		$content .= "<h1>{$this->m_pageTitle}</h1>";
 		$content .= $this->connexionForm();
 		$content .= $this->generateMenu();
 		$content .= "<div id='content'>{$this->m_content}</div>";
-		$content .= self::generateFooter();
+		$content .= self::generateFooter($this->js);
 		
 		return $content;
 	}
@@ -109,5 +155,35 @@ BODY;
 		$content.= self::generateFooter();
 		
 		return $content;
+	}
+	
+	// Génération d'un composant de la page
+
+	function renderComponent($id = '', $class = '') {
+		if ($this->visitor->hasAccess($this->page)) {
+			if (''==$id || ''==$class) {
+				return $this->m_content;
+			}
+			else if (''!=$id) {
+				return "<div id='$id'>{$this->m_content}</div>";
+			}
+			else {
+				return "<div class='$class'>{$this->m_content}</div>";
+			}
+		}
+	}
+	
+	// Méthodes statiques
+	
+	static public function includePart($path) {
+		include self::$includePath.$path;
+	}
+	
+	static public function url($page) {
+		return $page;
+	}
+	
+	static public function redirect($page) {
+		header('Location:'.self::url($page));
 	}
 }

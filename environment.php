@@ -1,10 +1,12 @@
 <?php 
 
-include_once 'util/dba/dba.mysql.php';
-include_once 'util/visitor.php';
-include_once 'util/pager.php';
-include_once 'util/liste.php';
-include_once 'util/vars.php';
+include_once 'util/dba/dba.mysql.class.php';
+include_once 'util/dba/dba.pdo.class.php';
+include_once 'util/visitor.class.php';
+include_once 'util/helpers/pager.class.php';
+include_once 'util/helpers/form.class.php';
+include_once 'util/liste.class.php';
+include_once 'util/vars.class.php';
 
 session_start();
 
@@ -36,5 +38,6 @@ else {
 }
 
 $VARS = new Variables();
+//var_dump($VARS);
 
 ?>
