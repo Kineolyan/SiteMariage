@@ -43,19 +43,55 @@ class Form {
 		<input type='text' id='$for' name='{$this->nameValue($name)}' value='$value'/>\n";
 	}
 	
-	public function check($name, $label, $values) {
+	public function radio($name, $label, $values) {
 		$for = $this->forValue($name);
 		
-		$checkboxes = "<label for='$for'>$label</label>\n";
+		$radioButtons = "<label for='$for'>$label</label>\n";
 		foreach ($values as $value => $state) {
-			$checkboxes.= "<input type='checkbox' id='$for' name='{$this->nameValue($name)}' value='$value'";
+			$for = $this->forValue($name.'_'.$value);
+			
+			$radioButtons.= "<input type='radio' id='$for' name='{$this->nameValue($name)}' value='$value'";
+			if ($state) {
+				$radioButtons.= " checked='checked'";
+			}
+			$radioButtons.= "/><label for='$for'>$label</label>\n";
+		}
+		
+		return $radioButtons;
+	}
+	
+	public function check($name, $label, $values) {
+		$checkboxes = "";
+		foreach ($values as $value => $state) {
+			$for = $this->forValue($name.'_'.$value);
+			
+			$checkboxes = "<input type='checkbox' id='$for' name='{$this->nameValue($name)}' value='$value'";
 			if ($state) {
 				$checkboxes.= " checked='checked'";
 			}
-			$checkboxes.= "/>\n";
+			$checkboxes.= "/><label for='$for'>$label</label>\n";
 		}
 		
 		return $checkboxes;
+	}
+	
+	public function select($name, $label, $values, $multiple=false) {
+		$for = $this->forValue($name);
+		
+		$select = "<label for='$for'>$label</label>\n";
+		$select = "<select id='$for' name='{$this->nameValue($name)}";
+		$select.= $multiple? " multiple='multiple' ": '';
+		$select.= "'>\n";
+		foreach ($values as $value => $state) {
+			$select.= "<option value='$value'";
+			if ($state) {
+				$select.= " selected='selected'";
+			}
+			$select.= ">$value</option>\n";
+		}
+		$select.= '</select>';
+		
+		return $select;
 	}
 	
 	public function hidden($name, $value='') {
@@ -74,7 +110,7 @@ class Form {
 	
 	private function nameValue($name) {
 		$suffixe = (self::$NO_ID!=$this->m_itemId && $this->m_useId)?
-			"[{$this->m_itemId}]": '';
+			/*"[{$this->m_itemId}]"*/ '[]': '';
 		return $name.$suffixe;
 	}
 	
