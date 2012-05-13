@@ -6,8 +6,10 @@ $page = new Pager('Facture');
 
 $page->title = 'Facture générale';
 $page->pageTitle = 'Facture générale';
-$page->content = '<p>En cours de construction</p>';
+?>
 
+<p>En cours de construction</p>
+
+<?php 
 $page->render();
-
 ?>

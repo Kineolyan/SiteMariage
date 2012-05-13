@@ -3,7 +3,6 @@
 include_once "environment.php";
 
 $page = new Pager('Admin');
-ob_start();
 $page->title = 'Administration';
 $page->pageTitle = 'Page d\'administration du site';
 
