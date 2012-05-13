@@ -71,7 +71,7 @@ class Variables {
 		}
 	}
 	
-	private function getVar(&$array, $name, $type='string') {
+	private function getVar(&$array, $name, $type) {
 		if (isset($array[$name])) {
 			return $this->format($array[$name], $type);
 		}
