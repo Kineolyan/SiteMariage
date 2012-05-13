@@ -20,6 +20,7 @@ $liste->gererSoumission();
 switch ($VARS->get('view')) {
 	case 'registration':
 		echo $liste->registrationView();
+		$page->addJs('javascript/listing.registration.js');
 		break;
 		
 	case 'liste':
