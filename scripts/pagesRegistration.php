@@ -1,6 +1,9 @@
 <?php
 
-function registerPage($db, $page, $ajax) {
+include_once '../environment.php';
+include_once 'pageList.php';
+
+function registerItem($db, $page, $ajax) {
 	if ($ajax) {
 		if (0==$db->count('pages', '*', "title='$page'")) {
 			$id = $db->insert('pages', array('title' => $page));
@@ -27,70 +30,54 @@ function registerPage($db, $page, $ajax) {
 
 function registerPages($db, $pages, $ajax) {
 	if ($ajax) {
-		foreach ($pages as $page=>$contenu) {
-			if (is_array($contenu)) {
-				$jsonMessage = registerPage($db, $page, true);
-				$json = registerPages($db, $contenu);
-				$json[] = $jsonMessage;
-				return $json;
-			}
-			else {
-				return array(registerPage($db, $contenu, true));
+		$json = array();
+		foreach ($pages as $page => $nom) {
+			$jsonPage = registerItem($db, $page, true);
+			
+			if (NULL!=$jsonPage) {
+				$json[] = $jsonPage;
 			}
 		}
+		
+		return $json;
 	}
 	else {
-		foreach ($pages as $page=>$contenu) {
-			if (is_array($contenu)) {
-				registerPage($db, $page, false);
-				registerPages($db, $contenu);
+		foreach ($pages as $page => $nom) {
+			registerItem($db, $page, false);
+		}
+	}
+}
+
+function registerComponents($db, $components, $ajax) {
+	if ($ajax) {
+		$json = array();
+		foreach ($components as $component) {
+			$jsonPage = registerItem($db, $component, true);
+			
+			if (NULL!=$jsonPage) {
+				$json[] = $jsonPage;
 			}
-			else {
-				registerPage($db, $contenu, false);
-			}
+		}
+		
+		return $json;
+	}
+	else {
+		foreach ($components as $component) {
+			registerItem($db, $component, false);
 		}
 	}
 }
 
 if ($VARS->isAjaxRequest()) {
-	$jsonArray = registerPages($DB, $pagesList, true);
-	echo empty($jsonArray)? '{}': json_encode($jsonArray);
+	$jsonPages = registerPages($DB, $pagesList, true);
+	$jsonComposants = registerComponents($DB, $componentsList, true);
+	
+	echo empty($jsonPages) && empty($jsonComposants) ? 
+		'{}': json_encode(array_merge($jsonPages, $jsonComposants));
 }
 else {
 	registerPages($DB, $pagesList, false);
+	registerComponents($DB, $componentsList, false);
 }
-
-// $inRegistrationProcess = true;
-
-// function registerPage($path) {
-// 	global $DB, $inRegistrationProcess;
-// 	echo "registration of ".$path.'<br/>';
-	
-// 	include_once($path);
-	
-// 	if (0==$DB->querySQL("SELECT COUNT(*) FROM pages WHERE id='".$pageId."';", true)) {
-// 		$DB->querySQL("INSERT INTO pages(id, title) VALUES ('{$pageId}', '{$pageTitle}');");
-// 	}
-// }
-
-// function registerFolder($path) {
-// 	echo $path.'<br/>';
-// 	$exclusionList = array('..', '.', '.buildpath', '.settings',
-// 		'.project', 'environment.php', 'include', 'pagesRegistration.php');
-// 	$handle = opendir($path);
-	
-// 	while ($file = readdir($handle)) {
-// 		if (!in_array($file, $exclusionList)) {
-// 			if (is_dir($file)) {
-// 				registerFolder($path.$file.'/');
-// 			}
-// 			else {
-// 				registerPage($path.$file);
-// 			}
-// 		}
-// 	}
-// }
-
-// registerFolder('../');
 
 ?>
