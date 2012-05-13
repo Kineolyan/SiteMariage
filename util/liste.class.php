@@ -74,7 +74,7 @@ class Liste {
 	}
 	
 	public function registrationView() {
-		$page = new Pager('RegistrationForm');
+		$page = new Pager('RegistrationForm', false);
 
 		$form = new Form('registration', 0);
 		$participant = '';
@@ -84,13 +84,13 @@ class Liste {
 		$participant.= $form->hidden('action', 'registration');
 		$participant.= $form->submit('', 'Enregistrer');
 
-$page->content = <<<REGISTRATION
+$page->content("
 {$form->create('listing.php')}
 	<div class='participant'>
 		$participant
 	</div>
-{$form->end()}
-REGISTRATION;
+{$form->end()}	
+");
 
 		return $page->renderComponent();
 	}

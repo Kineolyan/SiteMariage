@@ -1,109 +1,106 @@
 <?php
 
 class Pager {
-	private $visitor;
-	private $page;
+	private $m_visitor;
+	private $m_page;
 	private $m_title;
 	private $m_pageTitle;
 	private $m_content;
-	private $css;
-	private $js;
+	private $m_css;
+	private $m_js;
 	
 	static private $includePath = 'include/';
 	static public $baseUrl = 'mariage/';
 
-	public function __construct($page) {
+	/**
+	 * Construit un patron pour la page et démarre l'enregistrement
+	 * en buffer de toute sortie.
+	 * 
+	 * @param String $page est le nom de la page
+	 * @param boolean $capture indique s'il faut capturer toute sortie
+	 */
+	public function __construct($page, $capture = true) {
 		global $VISITOR;
 		
-		$this->visitor = $VISITOR;
-		$this->page = $page;
+		$this->m_visitor = $VISITOR;
+		$this->m_page = $page;
 		$this->m_title = '';
 		$this->m_pageTitle = '';
 		$this->m_content = '';
-		$this->css = array();
-		$this->js = array(
+		$this->m_css = array();
+		$this->m_js = array(
 				'javascript/jquery-1.7.2.min.js'
 			);
 
-		$this->visitor->manageConnection();
-		ob_start();
+		$this->m_visitor->manageConnection();
+		if ($capture) {
+			ob_start();
+		}
 	}
-
-	public function __set($attribut, $valeur) {
-		$this->{'m_' . $attribut} = $valeur;
+	
+	private function getSet($attribut, $value) {
+		if (NULL==$value) {
+			return $this->{'m_'.$attribut};
+		}
+		else {
+			$this->{'m_'.$attribut} = $value;
+		}	
 	}
-
-	public function __get($attribut) {
-		return $this->{'m_' . $attribut};
+	
+	public function title($value = NULL) {	
+		return $this->getSet('title', $value);
 	}
+	
+	public function pageTitle($value = NULL) {	
+		return $this->getSet('pageTitle', $value);
+	}
+	
+	public function content($value = NULL) {	
+		return $this->getSet('content', $value);
+	}
+	
+	public function css() {	return $this->m_css;	}
 	
 	public function addCss($file) {	
 		if (is_array($file)) {
-			$this->css = array_merge($this->css, $file);
+			$this->m_css = array_merge($this->m_css, $file);
 		}
 		else {
-			$this->css[] = $file;
+			$this->_css[] = $file;
 		}
 	}
 	
+	public function js() {	return $this->m_js;	}
+	
 	public function addJs($file) {
 		if (is_array($file)) {
-			$this->js = array_merge($this->js, $file);
+			$this->m_js = array_merge($this->m_js, $file);
 		}
 		else {
-			$this->js[] = $file;
+			$this->m_js[] = $file;
 		}
 	}
 
-	static public function generateHeaders($pageTitle, $css=array()) {
-		$headerScripts = '';
-		foreach ($css as $header) {
-			$headerScripts.= "<link rel='stylesheet' href='$header' type='text/css'/>\n";
-		}
+	public function getNavigation() {
+		require 'scripts/pageList.php';
 		
-		return <<<HEADERS
-<html>
-<head>
-	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-	<title>$pageTitle</title>
-	{$headerScripts}
-</head>
-<body>		
-HEADERS;
-	}
-
-	static public function generateFooter($scripts=array()) {
-		$htmlScripts = '';
-		foreach ($scripts as $script) {
-			$htmlScripts.= "<script type='text/javascript' src='$script'></script>";
+		$menu = '<ul>';
+		foreach ($pagesList as $page => $pageTitle) {
+			$pageName = $page;
+			$pageName[0] = strtolower($pageName[0]);
+			$menu.= "<li><a href='$pageName.php'>$pageTitle</a></li>";
 		}
+		$menu.= '</ul>';
 		
-		return <<<FOOTER
-</body>
-{$htmlScripts}
-</html>
-FOOTER;
-	}
-
-	static public function generateMenu() {
-		return <<<MENU
-<h2>Menu :</h2>
-<ul>
-	<li><a href="index.php">Accueil</a></li>
-	<li><a href="infos.php">Informations</a></li>
-	<li><a href="listing.php">Listing</a></li>
-	<li><a href="facture.php">Facture</a></li>
-	<li><a href="admin.php">Admin page</a></li>
-</ul>	
-MENU;
+		return $menu;
 	}
 
 	private function connexionForm() {
-		if ($this->visitor->isLogged()) {
+		if ($this->m_visitor->isLogged()) {
 			return <<<CONNECTION
 <form action='' method='post'>
 	<p>
-		{$this->visitor->nom()}&nbsp;
+		{$this->m_visitor->nom()}&nbsp;
 		<input type='submit' name='deconnexion' value='Déconnecter'/>
 	</p>
 </form>
@@ -123,7 +120,7 @@ CONNECTION;
 		}
 	}
 	
-	public function visible() {	return $this->visitor->hasAccess($this->page);	}
+	public function visible() {	return $this->m_visitor->hasAccess($this->m_page);	}
 	
 	// Génération de la page complète
 
@@ -131,7 +128,7 @@ CONNECTION;
 		$this->m_content = ob_get_contents();
 		ob_end_clean();
 		
-		if (!$this->visitor->hasAccess($this->page)) {
+		if (!$this->m_visitor->hasAccess($this->m_page)) {
 			$this->renderDenied();
 		}
 		
@@ -169,7 +166,7 @@ CONNECTION;
 	// Génération d'un composant de la page
 
 	function renderComponent($id = '', $class = '') {
-		if ($this->visitor->hasAccess($this->page)) {
+		if ($this->m_visitor->hasAccess($this->m_page)) {
 			if (''==$id || ''==$class) {
 				return $this->m_content;
 			}
