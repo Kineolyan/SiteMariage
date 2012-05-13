@@ -73,24 +73,37 @@ class Liste {
 		}
 	}
 	
-	public function registrationView() {
+	public function registrationView($nbParticipants = 2) {
 		$page = new Pager('RegistrationForm', false);
 
-		$form = new Form('registration', 0);
-		$participant = '';
-		$participant.= $form->input('nom', 'Nom').'</br>';
-		$participant.= $form->input('prenom', 'Prenom').'</br>';
-		$form->useId(false);
-		$participant.= $form->hidden('action', 'registration');
-		$participant.= $form->submit('', 'Enregistrer');
+		$form = new Form('registration');
+		$users = array('--' => true);
+		$this->m_db->select('users', 'login', "login!='anonymous'");
+		while ($user = $this->m_db->fetch()) {
+			$users[$user['login']] = false;
+		}
+		$responsable = $form->input('login', 'Responsable').'&nbsp;';
+		$responsable.= $form->select('responsable', '', $users).'</br>';
+		
+		$participants = '';
+		for ($i = 0; $i<$nbParticipants; ++$i) {
+			$participantForm = new Form('registration', $i);
+			
+			$participant = "<div class='participant'>";
+			$participant.= $participantForm->input('nom', 'Nom').'</br>';
+			$participant.= $participantForm->input('prenom', 'Prenom');
+			
+			$participants.= $participant.'</div>';
+		}		
 
-$page->content("
-{$form->create('listing.php')}
-	<div class='participant'>
-		$participant
-	</div>
-{$form->end()}	
-");
+$page->content(
+"{$form->create('listing.php', 'registration')}
+	$responsable
+	$participants
+	{$form->hidden('action', 'registration')}
+	{$form->submit('', 'Enregistrer')}
+{$form->end()}"
+);
 
 		return $page->renderComponent();
 	}
