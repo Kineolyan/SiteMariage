@@ -1,4 +1,4 @@
-var indiceParticipant, participant;
+var indiceParticipant, participantHtml;
 
 function removeParticipant() {
 	if (1 < indiceParticipant){
@@ -8,7 +8,7 @@ function removeParticipant() {
 }
 
 function addParticipant() {
-	var part = participant.clone();
+	var part = participantHtml.clone();
 	part.html(part.html().replace(
 			/\[\d+\]/g, '['+indiceParticipant+']'));
 	$('#registration .participant:last').after(part);
@@ -18,10 +18,10 @@ function addParticipant() {
 $(function() {
 	var form = $('#registration');
 	indiceParticipant = form.children('.participant').size();
-	participant = $('#registration .participant:last').clone();
+	participantHtml = $('#registration .participant:last').clone();
 	
 	// Ajouter un bouton pour plus de participants
-	form.append("<span class='plus'>Ajouter</span>");
+	form.append("<span class='plus'>Ajouter</span>&nbsp;");
 	form.children('.plus').click(addParticipant);
 	form.append('<span class="moins">Supprimer</span>');
 	form.children('.moins').click(removeParticipant);

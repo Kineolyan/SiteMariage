@@ -8,20 +8,20 @@ class Pager {
 	private $m_content;
 	private $m_css;
 	private $m_js;
-	
+
 	static private $includePath = 'include/';
 	static public $baseUrl = 'mariage/';
 
 	/**
 	 * Construit un patron pour la page et démarre l'enregistrement
 	 * en buffer de toute sortie.
-	 * 
+	 *
 	 * @param String $page est le nom de la page
 	 * @param boolean $capture indique s'il faut capturer toute sortie
 	 */
 	public function __construct($page, $capture = true) {
 		global $VISITOR;
-		
+
 		$this->m_visitor = $VISITOR;
 		$this->m_page = $page;
 		$this->m_title = '';
@@ -37,31 +37,31 @@ class Pager {
 			ob_start();
 		}
 	}
-	
+
 	private function getSet($attribut, $value) {
 		if (NULL==$value) {
 			return $this->{'m_'.$attribut};
 		}
 		else {
 			$this->{'m_'.$attribut} = $value;
-		}	
+		}
 	}
-	
-	public function title($value = NULL) {	
+
+	public function title($value = NULL) {
 		return $this->getSet('title', $value);
 	}
-	
-	public function pageTitle($value = NULL) {	
+
+	public function pageTitle($value = NULL) {
 		return $this->getSet('pageTitle', $value);
 	}
-	
-	public function content($value = NULL) {	
+
+	public function content($value = NULL) {
 		return $this->getSet('content', $value);
 	}
-	
+
 	public function css() {	return $this->m_css;	}
-	
-	public function addCss($file) {	
+
+	public function addCss($file) {
 		if (is_array($file)) {
 			$this->m_css = array_merge($this->m_css, $file);
 		}
@@ -69,9 +69,9 @@ class Pager {
 			$this->_css[] = $file;
 		}
 	}
-	
+
 	public function js() {	return $this->m_js;	}
-	
+
 	public function addJs($file) {
 		if (is_array($file)) {
 			$this->m_js = array_merge($this->m_js, $file);
@@ -83,7 +83,7 @@ class Pager {
 
 	public function getNavigation() {
 		require 'scripts/pageList.php';
-		
+
 		$menu = '<ul>';
 		foreach ($pagesList as $page => $pageTitle) {
 			$pageName = $page;
@@ -91,7 +91,7 @@ class Pager {
 			$menu.= "<li><a href='$pageName.php'>$pageTitle</a></li>";
 		}
 		$menu.= '</ul>';
-		
+
 		return $menu;
 	}
 
@@ -119,24 +119,24 @@ CONNECTION;
 CONNECTION;
 		}
 	}
-	
+
 	public function visible() {	return $this->m_visitor->hasAccess($this->m_page);	}
-	
+
 	// Génération de la page complète
 
 	function render() {
 		$this->m_content = ob_get_contents();
 		ob_end_clean();
-		
+
 		if (!$this->m_visitor->hasAccess($this->m_page)) {
 			$this->renderDenied();
 		}
-		
+
 		ob_start();
 			require dirname(__FILE__).'/../../vues/layout.php';
 			$content = ob_get_contents();
 		ob_end_clean();
-		
+
 		echo $content;
 	}
 
@@ -153,7 +153,7 @@ CONNECTION;
 			require dirname(__FILE__).'/../../vues/layout.php';
 		$content = ob_get_contents();
 		ob_end_clean();
-		
+
 		return $content;
 	}
 
@@ -162,7 +162,7 @@ CONNECTION;
 		$this->m_pageTitle = 'Page à accés restreint';
 		$this->m_content = '';
 	}
-	
+
 	// Génération d'un composant de la page
 
 	function renderComponent($id = '', $class = '') {
@@ -178,17 +178,29 @@ CONNECTION;
 			}
 		}
 	}
-	
+
+	function renderAjax() {
+		if ($this->m_visitor->hasAccess($this->m_page)) {
+			$this->m_content = ob_get_contents();
+			ob_end_clean();
+
+			echo $this->m_content;
+		}
+		else {
+			echo '{state: "Access refused"}';
+		}
+	}
+
 	// Méthodes statiques
-	
+
 	static public function includePart($path) {
 		include self::$includePath.$path;
 	}
-	
+
 	static public function url($page) {
 		return $page;
 	}
-	
+
 	static public function redirect($page) {
 		header('Location:'.self::url($page));
 	}
