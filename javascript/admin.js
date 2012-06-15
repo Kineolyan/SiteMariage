@@ -5,7 +5,6 @@ function refreshPages() {
 			updatedList+= '<li>['+ page.id +']'+ page.title +'</li>';
 		});
 		
-		console.log(pageList.length);
 		$('#pageList li:last').before(updatedList);
 	});
 }
