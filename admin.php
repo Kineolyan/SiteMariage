@@ -3,8 +3,8 @@
 include_once "environment.php";
 
 $page = new Pager('Admin');
-$page->title = 'Administration';
-$page->pageTitle = 'Page d\'administration du site';
+$page->headerTitle('Administration');
+$page->pageTitle('Page d\'administration du site');
 
 // Traitement des soumissions des formulaires
 $messages = '';

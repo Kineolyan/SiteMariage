@@ -42,7 +42,15 @@ class Visitor {
 	public function isAdmin() {	return $this->m_isAdmin;	}
 
 	public function hasAccess($page) {
-		return in_array($this->getPageId($page), $this->m_allowedPages);
+		if (is_int($page)) {
+			return in_array($page, array_keys($this->m_allowedPages));
+		}
+		else if (is_string($page)) {
+			return in_array($page, array_values($this->m_allowedPages));
+		}
+		else {
+			return false;
+		}
 	}
 
 	/* -- Gestion de la connexion -- */
@@ -90,8 +98,13 @@ class Visitor {
 	private function getAllowedPages($login) {
 		$this->m_db->select('users', 'allowed_pages', "login='$login'");
 		$response = $this->m_db->fetch();
-		$this->m_allowedPages = explode(',', $response['allowed_pages']);
 		$this->m_db->endQuery();
+		$this->m_allowedPages = array();
+		foreach (explode(',', $response['allowed_pages']) as $pageId) {
+			$this->m_allowedPages[$pageId] =
+				$this->m_db->getSingleDatum('pages', 'title', "id='$pageId'");
+		}
+
 	}
 
 	private function getPageId($pageTitle) {

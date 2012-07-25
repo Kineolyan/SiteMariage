@@ -4,12 +4,13 @@ class Variables {
 	private $m_get;
 	private $m_post;
 	private $m_ajax;
+	private $m_flash;
 	private $m_isAjaxRequest;
 
 	public function __construct() {
 		if ((isset($_POST['ajax']) && '1'==$_POST['ajax'])
 		 || (isset($_GET['ajax']) && '1'==$_GET['ajax'])) {
-			$this->m_ajax = array_merge_recursive($_POST, $_GET);
+			$this->m_ajax = $this->secureVars(array_merge_recursive($_POST, $_GET));
 			$this->m_get = array();
 			$this->m_post = array();
 			$this->m_isAjaxRequest = true;
@@ -19,6 +20,15 @@ class Variables {
 			$this->m_post = $this->secureVars($_POST);
 			$this->m_ajax = array();
 			$this->m_isAjaxRequest = false;
+		}
+
+		$this->m_flash = array();
+		foreach ($_SESSION as $key => $value) {
+			$parts = array();
+			if (preg_match("#^flash_([a-zA-Z].+)$#", $key, $parts)) {
+				$this->m_flash[$parts[1]] = $value;
+				unset($_SESSION[$key]);
+			}
 		}
 	}
 
@@ -52,6 +62,14 @@ class Variables {
 		return $this->getVar($this->m_ajax, $name, $type);
 	}
 
+	public function flash($name, $type='') {
+		return $this->getVar($this->m_flash, $name, $type);
+	}
+
+	public function setFlash($key, $value) {
+		return $_SESSION["flash_".$key] = $value;
+	}
+
 	public function isAjaxRequest() {	return $this->m_isAjaxRequest;	}
 
 	public function hasVars($type=NULL) {
@@ -65,9 +83,12 @@ class Variables {
 			case 'ajax':
 				return !empty($this->m_ajax);
 
+			case 'flash':
+				return !empty($this->m_flash);
+
 			default:
-				return !(empty($this->m_post)
-					&& empty($this->m_get) && empty($this->m_ajax));
+				return !(empty($this->m_post) && empty($this->m_get)
+					&& empty($this->m_ajax) && empty($this->m_flash));
 		}
 	}
 

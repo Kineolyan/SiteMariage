@@ -4,12 +4,27 @@ class Form {
 	private $m_name;
 	private $m_itemId;
 	private $m_useId;
-	static private $NO_ID = -1;
+	private $m_multipleFields;
+	private static $NO_ID = -1;
+	private static $MULTIPLE_ID = -2;
 
 	public function __construct($name, $itemId = -1) {
 		$this->m_name = $name;
-		$this->m_itemId = $itemId;
-		$this->m_useId = self::$NO_ID!=$itemId;
+		if (self::$NO_ID != $itemId) {
+			$this->m_itemId = $itemId;
+			$this->m_useId = true;
+			$this->m_multipleFields = false;
+		}
+		else if (self::$MULTIPLE_ID == $itemId) {
+			$this->m_itemId = self::$MULTIPLE_ID;
+			$this->m_useId = false;
+			$this->m_multipleFields = true;
+		}
+		else {
+			$this->m_itemId = self::$NO_ID;
+			$this->m_useId = false;
+			$this->m_multipleFields = false;
+		}
 	}
 
 	public function useId($use) {	$this->m_useId = $use;	}
@@ -37,10 +52,13 @@ class Form {
 	}
 
 	public function input($name, $label, $value='') {
-		$for = $this->forValue($name);
-
-		return "<label for='$for'>$label</label>
-		<input type='text' id='$for' name='{$this->nameValue($name)}' value='$value'/>\n";
+		if ('' != $label) {
+			$for = $this->forValue($name);
+			return "<label for='$for'>$label</label>
+				<input type='text' id='$for' name='{$this->nameValue($name)}' value='$value'/>\n";
+		} else {
+			return "<input type='text' name='{$this->nameValue($name)}' value='$value'/>\n";
+		}
 	}
 
 	public function password($name, $label, $value='') {

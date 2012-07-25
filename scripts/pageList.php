@@ -1,10 +1,11 @@
 <?php
 
 $pagesList = array(
-		'Index' => 'Accueil',
+		'Index' => 'Entrée',
+		'Accueil' => 'Accueil',
 		'Infos' => 'Informations',
 		'Listing' => 'Liste des invités',
-		'Facture' => 'Facture',		
+		'Facture' => 'Facture',
 		'Admin' => 'Administration'
 );
 

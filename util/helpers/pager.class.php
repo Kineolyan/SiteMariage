@@ -5,6 +5,7 @@ class Pager {
 	private $m_page;
 	private $m_title;
 	private $m_pageTitle;
+	private $m_sousMenu;
 	private $m_content;
 	private $m_css;
 	private $m_js;
@@ -24,13 +25,14 @@ class Pager {
 
 		$this->m_visitor = $VISITOR;
 		$this->m_page = $page;
-		$this->m_title = '';
+		$this->m_headerTitle = '';
 		$this->m_pageTitle = '';
+		$this->m_sousMenu = NULL;
 		$this->m_content = '';
-		$this->m_css = array();
-		$this->m_js = array(
-				'javascript/jquery-1.7.2.min.js'
-			);
+		$this->m_css = array('bootstrap/css/bootstrap.min.css',
+				'bootstrap/css/bootstrap-responsive.min.css', 'css/style.css');
+		$this->m_js = array('javascript/jquery-1.7.2.min.js',
+				'bootstrap/js/bootstrap.min.js', 'javascript/general.js');
 
 		$this->m_visitor->manageConnection();
 		if ($capture) {
@@ -38,39 +40,47 @@ class Pager {
 		}
 	}
 
-	private function getSet($attribut, $value) {
-		if (NULL==$value) {
-			return $this->{'m_'.$attribut};
+	private function getSet(&$attribut, $value) {
+		if (NULL == $value) {
+			return $attribut;
 		}
 		else {
-			$this->{'m_'.$attribut} = $value;
+			$attribut = $value;
 		}
 	}
 
-	public function title($value = NULL) {
-		return $this->getSet('title', $value);
+	public function headerTitle($value = NULL) {
+		return $this->getSet($this->m_headerTitle, $value);
 	}
 
 	public function pageTitle($value = NULL) {
-		return $this->getSet('pageTitle', $value);
+		return $this->getSet($this->m_pageTitle, $value);
+	}
+
+	public function sousMenu($items) {
+		$this->m_sousMenu = $items;
 	}
 
 	public function content($value = NULL) {
-		return $this->getSet('content', $value);
+		return $this->getSet($this->m_content, $value);
 	}
 
-	public function css() {	return $this->m_css;	}
+	public function css() {
+		return $this->m_css;
+	}
 
 	public function addCss($file) {
 		if (is_array($file)) {
 			$this->m_css = array_merge($this->m_css, $file);
 		}
 		else {
-			$this->_css[] = $file;
+			$this->m_css[] = $file;
 		}
 	}
 
-	public function js() {	return $this->m_js;	}
+	public function js() {
+		return $this->m_js;
+	}
 
 	public function addJs($file) {
 		if (is_array($file)) {
@@ -84,56 +94,81 @@ class Pager {
 	public function getNavigation() {
 		require 'scripts/pageList.php';
 
-		$menu = '<ul>';
+		$menu = '<ul class="nav">';
 		foreach ($pagesList as $page => $pageTitle) {
 			$pageName = $page;
 			$pageName[0] = strtolower($pageName[0]);
-			$menu.= "<li><a href='$pageName.php'>$pageTitle</a></li>";
+			if ($this->m_visitor->hasAccess($page)) {
+				$menu .= "<li><a href='$pageName.php'>$pageTitle</a></li>";
+			}
 		}
-		$menu.= '</ul>';
+		$menu .= '</ul>';
 
 		return $menu;
 	}
 
 	private function connexionForm() {
 		if ($this->m_visitor->isLogged()) {
-			return <<<CONNECTION
-<form action='' method='post'>
-	<p>
-		{$this->m_visitor->nom()}&nbsp;
-		<input type='submit' name='deconnexion' value='Déconnecter'/>
-	</p>
-</form>
-CONNECTION;
-		} else {
-			return <<<CONNECTION
-<form action='' method='post'>
-	<p>
-		<label for='connect_login'>Login :
-		<input type='text' id='connect_login' name='login'/>&nbsp;
-		<label for='connect_password'>Mot de passe :
-		<input type='password' id='connect_password' name='password'/>&nbsp;
-		<input type='submit' name='connexion' value='Connecter'/>
-	</p>
-</form>
-CONNECTION;
+			$connectedForm = new Form("connectedForm");
+			$html = $connectedForm->create('', 'connectedForm');
+			$html .= "<p>{$this->m_visitor->nom()}&nbsp;";
+			$html .= $connectedForm->submit('deconnexion', 'Déconnecter');
+			$html .= '</p>' . $connectedForm->end();
+
+			return $html;
+		}
+		else {
+			$connectionForm = new Form("connectionForm");
+			$html = $connectionForm->create('', 'connectionForm', 'noJS');
+			$html .= '<p>' . $connectionForm->input('login', 'Login : ') . '<br/>';
+			$html .= $connectionForm->password('password', 'Mot de passe : ')
+					. '<br/>';
+			$html .= $connectionForm->submit('connexion', 'Connecter');
+			$html .= '</p>' . $connectionForm->end();
+
+			return $html;
 		}
 	}
 
-	public function visible() {	return $this->m_visitor->hasAccess($this->m_page);	}
+	public function visible() {
+		return $this->m_visitor->hasAccess($this->m_page);
+	}
 
 	// Génération de la page complète
 
-	function render() {
+	public function render($layout = NULL) {
 		$this->m_content = ob_get_contents();
 		ob_end_clean();
+
+		// Ajouter le menu latéral s'il y a des éléments
+		// 		if (NULL !== $this->m_sousMenu && 0 < count($this->m_sousMenu)) {
+		// 			$menuLateral = '<ul class="nav nav-list">';
+		// 			foreach ($this->m_sousMenu as $url => $section) {
+		// 				if (is_array($section)) {
+		// 					$menuLateral.= "<li class='nav-header'>$url</li>";
+		// 					foreach ($section as $innerUrl => $titre) {
+		// 						$menuLateral.= "<li><a href='$innerUrl'>$titre</a></li>";
+		// 					}
+		// 				}
+		// 				else {
+		// 					$menuLateral.= "<li><a href='$url'>$section</a></li>";
+		// 				}
+		// 			}
+		// 			$menuLateral.= '</ul>';
+
+		// 			$this->content = '<div class="span2">'.$menuLateral.'</div>'
+		// 				.'<div class="span10">'.$this->m_content.'</div>';
+		// 		}
 
 		if (!$this->m_visitor->hasAccess($this->m_page)) {
 			$this->renderDenied();
 		}
 
 		ob_start();
-			require dirname(__FILE__).'/../../vues/layout.php';
+			if (NULL == $layout) {
+				$layout = 'layout.php';
+			}
+			require dirname(__FILE__) . '/../../vues/' . $layout;
 			$content = ob_get_contents();
 		ob_end_clean();
 
@@ -141,16 +176,8 @@ CONNECTION;
 	}
 
 	private function renderGranted() {
-		//$content = self::generateHeaders($this->m_title, $this->css);
-
-// 		$content .= "<h1>{$this->m_pageTitle}</h1>";
-// 		$content .= $this->connexionForm();
-// 		$content .= $this->generateMenu();
-// 		$content .= "<div id='content'>{$this->m_content}</div>";
-// 		$content .= self::generateFooter($this->js);
-
 		ob_start();
-			require dirname(__FILE__).'/../../vues/layout.php';
+		require dirname(__FILE__) . '/../../vues/layout.php';
 		$content = ob_get_contents();
 		ob_end_clean();
 
@@ -167,10 +194,10 @@ CONNECTION;
 
 	function renderComponent($id = '', $class = '') {
 		if ($this->m_visitor->hasAccess($this->m_page)) {
-			if (''==$id || ''==$class) {
+			if ('' == $id || '' == $class) {
 				return $this->m_content;
 			}
-			else if (''!=$id) {
+			else if ('' != $id) {
 				return "<div id='$id'>{$this->m_content}</div>";
 			}
 			else {
@@ -194,7 +221,7 @@ CONNECTION;
 	// Méthodes statiques
 
 	static public function includePart($path) {
-		include self::$includePath.$path;
+		include self::$includePath . $path;
 	}
 
 	static public function url($page) {
@@ -202,6 +229,6 @@ CONNECTION;
 	}
 
 	static public function redirect($page) {
-		header('Location:'.self::url($page));
+		header('Location:' . self::url($page));
 	}
 }

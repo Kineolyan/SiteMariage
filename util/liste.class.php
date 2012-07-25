@@ -40,7 +40,7 @@ class Liste {
 		if (NULL == $responsableId || 0 == $responsableId) {
 			$loginResponsable = $VARS->post('nouveauLogin');
 			if ('' == $loginResponsable) {
-				die('Pas de responsable pour les invités');
+				$VARS->setFlash("erreur", 'Pas de responsable pour les invités');
 				return;
 			}
 			// Créer un nouveau compte
@@ -51,12 +51,21 @@ class Liste {
 			));
 		}
 
+		$erreurs = array();
 		for ($i = 0; $i < $nbInvites; ++$i) {
-			Invite::ajouter(array(
-				'nom' => $noms[$i],
-				'prenom' => $prenoms[$i],
-				'official_id' => $responsableId
-			));
+			if ("" != $noms[$i] && "" != $prenoms[$i]) {
+				Invite::ajouter(array(
+					'nom' => $noms[$i],
+					'prenom' => $prenoms[$i],
+					'official_id' => $responsableId
+				));
+			}
+			else {
+				$erreurs[] = "{ $noms[$i] $prenoms[$i] }";
+			}
+		}
+		if (!empty($erreurs)) {
+			$VARS->setFlash("erreur", 'Enregistrements impossibles pour '.implode(', ', $erreurs));
 		}
 	}
 
@@ -84,13 +93,39 @@ class Liste {
 				$content .= $invite->renderLine();
 			}
 
-			return '<ul>' . $content . '</ul>';
+			return '<table id="invites" class="table table-striped table-condensed">'
+				.'<thead>' . Invite::renderLineHeader() . '</thead>'
+				.'<tbody>' . $content . '</tbody>'
+				. '</table>';
 		} else {
 			return '<p>Aucun invité pour le moment</p>';
 		}
 	}
 
-	public function registrationView($nbParticipants = 2) {
+	/**
+	 * Génère la liste des invités éditable par l'utilisateur
+	 * Si aucun invité n'est enregistré, on renvoie un message plutôt que la liste.
+	 *
+	 * @return string contenant la liste
+	 */
+	public function personnalListView() {
+		if (0 < $this->m_db->select('invites', '*', 'official_id='.$this->m_visitor->id())) {
+			$content = '';
+			while ($dataInvite = $this->m_db->fetch()) {
+				$invite = Invite::getByData($dataInvite);
+				$content .= $invite->renderLine();
+			}
+
+			return '<table id="invites" class="table table-striped table-condensed">'
+				.'<thead>' . Invite::renderLineHeader() . '</thead>'
+				.'<tbody>' . $content . '</tbody>'
+				. '</table>';
+		} else {
+			return '<p>Aucun invité pour le moment</p>';
+		}
+	}
+
+	public function registrationView($nbParticipants = 1) {
 		$page = new Pager('RegistrationForm', false);
 
 		$form = new Form('registration');
@@ -99,18 +134,23 @@ class Liste {
 		while ($user = $this->m_db->fetch()) {
 			$users[$user['id']] = $user['login'];
 		}
-		$responsable = $form->input('nouveauLogin', 'Responsable') . '&nbsp;';
-		$responsable .= $form->select('responsable', '', $users, 0) . '</br>';
+		$responsable = $form->select('responsable', 'Responsable', $users, 0) . '&nbsp;';
+		$responsable .= " ou un nouveau responsable: " . $form->input('nouveauLogin', '') . '</br>';
 
 		$participants = '';
 		for ($i = 0; $i < $nbParticipants; ++$i) {
 			$participantForm = new Form('registration', $i);
 
-			$participant = "<div class='participant'>";
-			$participant .= $participantForm->input('nom', 'Nom') . '</br>';
-			$participant .= $participantForm->input('prenom', 'Prenom');
+			$participant = "<div class='participant row'>";
+			$participant .= "<div class='input'>"
+				. $participantForm->input('nom', 'Nom')
+				. '</div>';
+			$participant .= "<div class='input'>"
+				. $participantForm->input('prenom', 'Prenom')
+				. '</div>';
+			$participant .= '</div>';
 
-			$participants .= $participant . '</div>';
+			$participants .= $participant;
 		}
 
 		$page->content("
