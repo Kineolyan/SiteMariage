@@ -1,0 +1,86 @@
+@CHARSET "utf8";
+
+/* -- General elements -- */
+
+input {
+	height: 28px;
+}
+
+.cleaner {
+	clean: both;
+}
+
+/* -- Specialized elements -- */
+
+.container {
+	margin-top: 10px;
+}
+
+/* -- Listing -- */
+
+th.header {
+	background-image: url(../data/bg-min.png);
+	background-repeat: no-repeat;
+	padding-left: 30px;
+	padding-top: 8px;
+	height: auto;
+}
+
+th.headerSortUp {
+	background-image: url(../data/asc-min.png);
+}
+
+th.headerSortDown {
+	background-image: url(../data/desc-min.png);
+}
+
+#searchBar {
+	height: 35px;
+	text-align: right;
+}
+
+#searchBar input {
+	margin-bottom: 0px;
+	vertical-align: middke;
+}
+
+#connectionForm.noJS input {
+	width: 125px;
+}
+
+#connectionForm.noJS label {
+	display: inline-block;
+}
+
+ul.dropdown-menu li {
+	margin-left: 10px;
+}
+
+/* -- Enregistrement -- */
+
+.participant {
+	background: #f0f0f0;
+	border-radius: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 10px 15px 5px;
+	width: 550px;
+}
+
+.participant .input {
+	float: left;
+	margin-left: 30px;
+}
+
+.participant .plus_moins {
+	float: left;
+	margin-left: 30px;
+	line-height: 25px;
+}
+
+.participant .plus,
+.participant .moins {
+	display: block;
+	margin-bottom: 5px;
+}
+
