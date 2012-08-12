@@ -143,7 +143,7 @@ abstract class Dba {
 			"SELECT COUNT($field) AS total FROM $table WHERE $conditions;");
 		$response = $this->fetch();
 		$this->endQuery();
-		return $response['total'];
+		return intval($response['total']);
 	}
 
 	public function update($table, $fields, $conditions) {
@@ -162,13 +162,20 @@ abstract class Dba {
 				$first = false;
 			}
 
-			var_dump($this->formatValue($value));
 			$updatedFields .= $field . '=' . $this->formatValue($value);
 		}
 
-		return $this
-				->querySQL("UPDATE $table SET $updatedFields WHERE $conditions",
-						true);
+		$result = $this->querySQL("UPDATE $table SET $updatedFields WHERE $conditions", true);
+		$this->endQuery();
+
+		return $result;
+	}
+
+	public function delete($table, $conditions) {
+		$result = $this->querySQL("DELETE FROM $table WHERE $conditions", true);
+		$this->endQuery();
+
+		return $result;
 	}
 
 	protected function formatValue($value) {
