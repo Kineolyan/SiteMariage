@@ -101,6 +101,7 @@ class Form {
 	}
 
 	public function select($name, $label, $values, $selected='', $multiple=false) {
+		$selectedFound = false;
 		$for = $this->forValue($name);
 
 		$select = '';
@@ -114,8 +115,9 @@ class Form {
 		$select.= "'>\n";
 		foreach ($values as $value => $valueLabel) {
 			$select.= "<option value='$value'";
-			if ($value == $selected) {
+			if (!$selectedFound && $value == $selected) {
 				$select.= " selected='selected'";
+				$selectedFound = true;
 			}
 			$select.= ">$valueLabel</option>\n";
 		}
