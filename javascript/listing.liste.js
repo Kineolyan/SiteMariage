@@ -85,6 +85,10 @@ Filtre.prototype = {
 		else if (0 == recherche.length) {
 			this.resetFiltre();
 		}
+	},
+	
+	focus: function() {
+		this._filtre.focus();
 	}
 };
 
@@ -96,19 +100,20 @@ $(function() {
 	$('#loupe').click(function() {
 		var visible = false;
 		var form = $('#searchForm');
-		var button = $(this);
+		var button = $('#loupe');
 		
 		return function () {
 			if (visible) {
 				filtre.resetFiltre();
 				form.hide();
-				button.text('Cacher');
+				button.text("Rechercher quelqu'un");
 			}
 			else {
 				form.show();
-				button.text("Rechercher quelqu'un");
+				button.text('Cacher');
+				filtre.focus();
 			}
 			visible = !visible;
 		}
-	}());
+	}(this));
 });
