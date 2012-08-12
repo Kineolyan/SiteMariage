@@ -5,6 +5,7 @@ class Invite {
 	private $_visitor;
 	private $_data;
 	private $_editable;
+	private $_categories;
 
 	private function __construct($id, $data) {
 		global $DB, $VISITOR;
@@ -22,6 +23,8 @@ class Invite {
 		}
 		$this->_editable = ($this->_visitor->id() == $this->_data['official_id']
 				|| $this->_visitor->isAdmin());
+
+ 		$this->getCategories();
 	}
 
 	/**
@@ -55,6 +58,38 @@ class Invite {
 	 * Prevents from editing an object with magic __set
 	 */
 	public function __set($attribut, $value) {}
+
+	private function getCategories() {
+		$this->_categories = array();
+		if ($this->_db->select(
+				'mm_user_categorie JOIN categories ON categories.id = mm_user_categorie.categorie_id',
+				'mm_user_categorie.categorie_id AS id, categories.categorie',
+				 'user_id='.$this->_data['id'])) {
+			while ($data = $this->_db->fetch()) {
+				$this->_categories[$data['id']] = $data['categorie'];
+			}
+		}
+		$this->_db->endQuery();
+	}
+
+	/**
+	 * Détermine si l'invité fait partie d'une catégorie
+	 *
+	 * @param {mixed} $categorie:
+	 * 	int pour l'id de la catégorie
+	 * 	string pour le nom de la catégorie
+	 *
+	 * @return {boolean} true si l'invité fait partie de la catégorie
+	 */
+	public function aCategorie($categorie) {
+		if (is_int($categorie)) {
+			return array_key_exists($categorie, $this->_categories);
+		} else if (is_string($categorie)) {
+			return in_array($categorie, $this->_categories);
+		}
+
+		return false;
+	}
 
 	static public function ajouter($data) {
 		global $DB;
