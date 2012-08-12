@@ -4,10 +4,10 @@ $(function() {
 	
 	/* -- Connection form -- */
 	// Ajouter le popover
-	var boutonEnregister = $('<div class="btn">S\'enregistrer</div>')
+	var boutonEnregistrer = $('<div class="btn" id="connect">S\'enregistrer</div>');
 	var displayForm = false;
 	
-	boutonEnregister
+	boutonEnregistrer
 		.popover({
 			animation: true,
 			placement: 'bottom',
