@@ -56,6 +56,15 @@ ul.dropdown-menu li {
 	margin-left: 10px;
 }
 
+#invites .btn-group:after {
+	display: table-cell;
+}
+
+.actions {
+	padding: 5px;
+	display: table-cell;
+}
+
 /* -- Enregistrement -- */
 
 .participant {

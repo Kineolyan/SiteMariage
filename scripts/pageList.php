@@ -10,7 +10,7 @@ $pagesList = array(
 );
 
 $componentsList = array(
-		'RegistrationForm'
+		'RegistrationForm', 'EditionForm'
 );
 
 ?>

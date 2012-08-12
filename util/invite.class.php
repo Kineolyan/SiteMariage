@@ -137,24 +137,31 @@ class Invite {
 	 * @return string contenant la ligne en HTML
 	 */
 	public function renderLine() {
-		$content = "<td>{$this->m_data['nom']}</td>";
-		$content.= "<td>{$this->m_data['prenom']}</td>";
-		$content.= "<td><div class='btn-group'>
-			<button class='btn ".Invite::getStatusClass($this->m_data['statut'])." dropdown-toggle' data-toggle='dropdown'>";
-			$content.= "<span statusId='{$this->m_data['id']}'>";
-			$content.= $this->getStatus($this->m_data['statut']);
-			$content.= '</span>';
+		$content = "<td>{$this->_data['nom']}</td>";
+		$content.= "<td>{$this->_data['prenom']}</td>";
 
-		if ($this->m_visitor->id()==$this->m_data['official_id']
-				|| $this->m_visitor->isAdmin()) {
-			$content.= '&nbsp;<b class="caret"></b></button>';
-			$content.= '<ul class="dropdown-menu">
+		$statut = "<div class='btn-group'>
+			<button class='btn ".Invite::getStatusClass($this->_data['statut'])." dropdown-toggle' data-toggle='dropdown'>";
+		$statut.= "<span statusId='{$this->_data['id']}'>";
+		$statut.= $this->getStatus($this->_data['statut']);
+		$statut.= '</span>';
+
+		$accompagne = '';
+
+		$editionBtn = "";
+
+		if ($this->estEditable()) {
+			$statut.= '&nbsp;<b class="caret"></b></button>';
+			$statut.= '<ul class="dropdown-menu">
 				<li>Indécis</li>
 				<li>Présent</li>
 				<li>Absent</li>
 				</ul>';
+
+			$editionBtn = "<a href='listing.php?view=edition&id={$this->_data['id']}'><i class='icon-pencil'></i></a>";
 		}
-		$content.= "</button></div></td>";
+		$statut.= "</button></div>";
+		$content.= "<td>$statut <div class='actions'>$editionBtn $accompagne</div></td>";
 
 		return '<tr>'.$content.'</tr>';
 	}

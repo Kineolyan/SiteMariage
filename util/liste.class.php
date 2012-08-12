@@ -3,14 +3,14 @@
 require_once 'invite.class.php';
 
 class Liste {
-	private $m_db;
-	private $m_visitor;
+	private $_db;
+	private $_visitor;
 
 	public function __construct() {
 		global $DB, $VISITOR;
 
-		$this->m_db = $DB;
-		$this->m_visitor = $VISITOR;
+		$this->_db = $DB;
+		$this->_visitor = $VISITOR;
 	}
 
 	// Méthodes de gestion des invités
@@ -23,12 +23,18 @@ class Liste {
 			$this->registerGuests();
 			Pager::redirect('listing.php?view=liste');
 			break;
+
+		case 'edition':
+			$this->updateGuest();
+			Pager::redirect('listing.php?view=liste');
+			break;
+
 		default:
 			break;
 		}
 	}
 
-	public function registerGuests() {
+	private function registerGuests() {
 		global $VARS;
 
 		$noms = $VARS->post('nom');
@@ -39,12 +45,12 @@ class Liste {
 		$responsableId = $VARS->post('responsable', 'int');
 		if (NULL == $responsableId || 0 == $responsableId) {
 			$loginResponsable = $VARS->post('nouveauLogin');
-			if ('' == $loginResponsable) {
+			if (NULL == $loginResponsable || '' == $loginResponsable) {
 				$VARS->setFlash("erreur", 'Pas de responsable pour les invités');
 				return;
 			}
 			// Créer un nouveau compte
-			$responsableId = $this->m_db->insert('users', array(
+			$responsableId = $this->_db->insert('users', array(
 				'login' => $loginResponsable,
 				'password' => Visitor::$DEFAULT_PASSWORD,
 				'allowed_pages' => '1,2,3'
@@ -54,11 +60,15 @@ class Liste {
 		$erreurs = array();
 		for ($i = 0; $i < $nbInvites; ++$i) {
 			if ("" != $noms[$i] && "" != $prenoms[$i]) {
-				Invite::ajouter(array(
+				$res = Invite::ajouter(array(
 					'nom' => $noms[$i],
 					'prenom' => $prenoms[$i],
-					'official_id' => $responsableId
+					'official_id' => $responsableId,
+					'plus_un' => $responsableId
 				));
+				if (!$res) {
+					$erreurs[] = "{ $noms[$i] $prenoms[$i] à l'ajout }";
+				}
 			}
 			else {
 				$erreurs[] = "{ $noms[$i] $prenoms[$i] }";
@@ -69,10 +79,69 @@ class Liste {
 		}
 	}
 
+	private function updateGuest() {
+		global $VARS;
+		$erreur = array();
+
+		$id = $VARS->post('id', 'int');
+		$nom = $VARS->post('nom', 'string');
+		$prenom = $VARS->post('prenom', 'string');
+
+		$invite = Invite::getById($id);
+		if ($invite->estEditable()) {
+			if (!$invite->mettreAJour(array('nom'=> $nom, "prenom"=>$prenom))) {
+				$erreurs[] = "Erreur sur les données de mise à jour.";
+			}
+		}
+		else {
+			$erreurs[] = "Impossible d'éditer cet invité.";
+		}
+
+		$plusUnChoice = $VARS->post('plusUnChoice', 'int');
+		$plusUnId = $VARS->post('plusUnId', 'int');
+		if (-2 == $plusUnChoice && -1 != $plusUnId) {
+			// Supprimer le plus un
+			$res = $invite->changerPlusUn($plusUnId, false);
+			if ('' != $res) {
+				$erreurs[] = $res;
+			}
+		} else if (-1 != $plusUnChoice) {
+			// Changer le plus un
+			$res = $invite->changerPlusUn($plusUnChoice, true);
+			if ('' != $res) {
+				$erreurs[] = $res;
+			}
+		} else if (-1 != $plusUnId) {
+			// Editer le plus un
+			Invite::getById($plusUnId)->mettreAJour(array(
+					'nom'=> $VARS->post('plusUnNom', 'string'),
+					"prenom"=>$VARS->post('plusUnPrenom', 'string')
+				));
+		} else {
+			// Créer un nouvel invité
+			$nom = $VARS->post('plusUnNom', 'string');
+			$prenom = $VARS->post('plusUnPrenom', 'string');
+			if ("" != $nom && "" != $prenom) {
+				$res = Invite::ajouter(array(
+						'nom' => $nom,
+						'prenom' => $prenom,
+						'official_id' => $invite->id
+				));
+				if (!$res) {
+					$erreurs[] = "{ $nom $prenom à l'ajout }";
+				}
+			}
+		}
+
+		if (!empty($erreurs)) {
+			$VARS->setFlash("erreur", implode('<br/>', $erreurs));
+		}
+	}
+
 	public function changerStatut() {
 		global $VARS;
 
-		$this->m_db->update('invites',
+		$this->_db->update('invites',
 			array('statut', $VARS->get('statut', 'int')),
 			'id=' . $VARS->get('idInvite', 'int'));
 	}
@@ -86,9 +155,9 @@ class Liste {
 	 * @return string contenant la liste
 	 */
 	public function listView() {
-		if (0 < $this->m_db->select('invites', '*')) {
+		if (0 < $this->_db->select('invites', '*')) {
 			$content = '';
-			while ($dataInvite = $this->m_db->fetch()) {
+			while ($dataInvite = $this->_db->fetch()) {
 				$invite = Invite::getByData($dataInvite);
 				$content .= $invite->renderLine();
 			}
@@ -109,9 +178,9 @@ class Liste {
 	 * @return string contenant la liste
 	 */
 	public function personnalListView() {
-		if (0 < $this->m_db->select('invites', '*', 'official_id='.$this->m_visitor->id())) {
+		if (0 < $this->_db->select('invites', '*', 'official_id='.$this->_visitor->id())) {
 			$content = '';
-			while ($dataInvite = $this->m_db->fetch()) {
+			while ($dataInvite = $this->_db->fetch()) {
 				$invite = Invite::getByData($dataInvite);
 				$content .= $invite->renderLine();
 			}
@@ -130,12 +199,18 @@ class Liste {
 
 		$form = new Form('registration');
 		$users = array(0 => '--');
-		$this->m_db->select('users', 'id, login', "login!='anonymous'");
-		while ($user = $this->m_db->fetch()) {
+		$this->_db->select('users', 'id, login', "login!='anonymous'");
+		while ($user = $this->_db->fetch()) {
 			$users[$user['id']] = $user['login'];
 		}
-		$responsable = $form->select('responsable', 'Responsable', $users, 0) . '&nbsp;';
-		$responsable .= " ou un nouveau responsable: " . $form->input('nouveauLogin', '') . '</br>';
+
+		$responsable = "";
+		if ($this->_visitor->isAdmin()) {
+			$responsable .= $form->select('responsable', 'Responsable', $users, 0) . '&nbsp;';
+			$responsable .= " ou un nouveau responsable: " . $form->input('nouveauLogin', '') . '</br>';
+		} else {
+			$responsable .= $form->hidden('responsable', $this->_visitor->id());
+		}
 
 		$participants = '';
 		for ($i = 0; $i < $nbParticipants; ++$i) {
@@ -161,6 +236,67 @@ class Liste {
 			{$form->submit('', 'Enregistrer')}
 			{$form->end()}"
 		);
+
+		return $page->renderComponent();
+	}
+
+	public function editionView() {
+		global $VARS;
+
+		$page = new Pager('EditionForm', false);
+
+		$invite = Invite::getById($VARS->get('id', 'int'));
+		if ($invite->estEditable()) {
+			$aPlusUn = false;
+			$form = new Form('edition');
+
+			$formHtml = $form->create('listing.php', 'edition');
+
+			$inviteHtml = '<h2>Invité</h2>';
+			$inviteHtml.= $form->hidden("id", $invite->id);
+			$inviteHtml.= $form->input("nom", "Nom", $invite->nom) .'<br/>';
+			$inviteHtml.= $form->input("prenom", "Prenom", $invite->prenom) .'<br/>';
+
+			if (-1 == $invite->plus_un) {
+				$plusUn = Invite::getByQuery('plus_un='.$invite->id);
+
+				$plusUnHtml = '<h2>Accompagné de</h2>';
+
+				$possiblesPlusUn = array('-1' => '--', '-2' => '-- supprimer --');
+				if (0 < $this->_db->select('invites', 'id, nom, prenom',
+						"plus_un=-1 AND id!={$invite->id} AND id NOT IN (SELECT DISTINCT plus_un FROM invites WHERE plus_un != -1)",
+						array('orderBy' => 'nom ASC, prenom ASC'))) {
+					while ($possible = $this->_db->fetch()) {
+						$possiblesPlusUn[$possible['id']] = "$possible[nom] $possible[prenom]";
+					}
+				}
+				$this->_db->endQuery();
+
+				$plusUnHtml.= $form->hidden("plusUnId", NULL!=$plusUn ? $plusUn->id: "-1");
+				$plusUnHtml.= $form->input("plusUnNom", "Nom", NULL!=$plusUn ? $plusUn->nom : '') .'<br/>';
+				$plusUnHtml.= $form->input("plusUnPrenom", "Prenom", NULL!=$plusUn ? $plusUn->prenom : '') .'<br/>';
+				$plusUnHtml.= $form->select('plusUnChoice', '', $possiblesPlusUn, '--');
+			}
+			else {
+				$hote = Invite::getById(intval($invite->plus_un));
+
+				$plusUnHtml = '<h2>Accompagne</h2>';
+				$plusUnHtml.= "<p><a href='listing.php?view=edition&id={$hote->id}'>"
+					."{$hote->nom} {$hote->prenom}</a></p>";
+			}
+
+			$formHtml.= $form->hidden('action', 'edition')
+				."<div class='row'>"
+				."<div class='span5'>$inviteHtml</div>"
+				."<div class='span5'>$plusUnHtml</div>"
+				."</div>"
+				.$form->submit('', 'Enregistrer')
+				.$form->end();
+			$page->content($formHtml);
+		}
+		else {
+			$page->content("Vous n'avez pas le droit d'éditer cette personne");
+		}
 
 		return $page->renderComponent();
 	}

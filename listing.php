@@ -86,6 +86,10 @@ else {
 		echo $searchBarHtml . $liste->personnalListView();
 		break;
 
+	case 'edition':
+		echo $liste->editionView();
+		break;
+
 	case 'liste':
 	default:
 		echo $searchBarHtml . $liste->listView();
