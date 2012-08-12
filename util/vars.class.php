@@ -10,14 +10,14 @@ class Variables {
 	public function __construct() {
 		if ((isset($_POST['ajax']) && '1'==$_POST['ajax'])
 		 || (isset($_GET['ajax']) && '1'==$_GET['ajax'])) {
-			$this->m_ajax = $this->secureVars(array_merge_recursive($_POST, $_GET));
+			$this->m_ajax = Variables::secureVars(array_merge_recursive($_POST, $_GET));
 			$this->m_get = array();
 			$this->m_post = array();
 			$this->m_isAjaxRequest = true;
 		}
 		else {
-			$this->m_get = $this->secureVars($_GET);
-			$this->m_post = $this->secureVars($_POST);
+			$this->m_get = Variables::secureVars($_GET);
+			$this->m_post = Variables::secureVars($_POST);
 			$this->m_ajax = array();
 			$this->m_isAjaxRequest = false;
 		}
@@ -32,18 +32,18 @@ class Variables {
 		}
 	}
 
-	private function secureVars($rawData) {
+	public static function secureVars($rawData) {
 		$secureData = array();
 		foreach($rawData as $key => $value) {
-			$secureData[$key] = $this->sanitize($value);
+			$secureData[$key] = Variables::sanitize($value);
 		}
 
 		return $secureData;
 	}
 
-	private function sanitize($value) {
+	public static function sanitize($value) {
 		if (is_array($value)) {
-			return $this->secureVars($value);
+			return Variables::secureVars($value);
 		}
 		else {
 			return htmlspecialchars($value);
