@@ -57,13 +57,7 @@ else {
 
 <div class="span10">
 <?php
-	$erreur = $VARS->flash("erreur", "string");
-	if (NULL != $erreur) {
-		echo "<p class=\"alert alert-error\">
-			<button class=\"close\" data-dismiss=\"alert\">×</button>
-			<strong>Erreur : </strong>$erreur
-		</p>";
-	}
+	$page->afficherErreurs();
 
 	$searchBarHtml = '<div class="row" id="searchBar">
 			<span id="searchForm" style="display: none">
