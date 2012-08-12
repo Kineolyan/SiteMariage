@@ -25,7 +25,7 @@ class Liste {
 			break;
 
 		case 'edition':
-			$this->updateGuest();
+			$this->updateGuests();
 			Pager::redirect('listing.php?view=liste');
 			break;
 
@@ -79,18 +79,33 @@ class Liste {
 		}
 	}
 
-	private function updateGuest() {
+	private function updateGuests() {
 		global $VARS;
 		$erreur = array();
 
 		$id = $VARS->post('id', 'int');
 		$nom = $VARS->post('nom', 'string');
 		$prenom = $VARS->post('prenom', 'string');
+		$enfant = $VARS->post('enfant', 'int');
 
 		$invite = Invite::getById($id);
 		if ($invite->estEditable()) {
-			if (!$invite->mettreAJour(array('nom'=> $nom, "prenom"=>$prenom))) {
-				$erreurs[] = "Erreur sur les données de mise à jour.";
+			if ('' != $nom && '' != $prenom) {
+				if (!$invite->mettreAJour(array('nom'=> $nom, "prenom"=>$prenom))) {
+					$erreurs[] = "Erreur sur les données de mise à jour.";
+				}
+			} else {
+				$erreurs[] = "Données non conforme pour l'invité.";
+			}
+
+			if (0 == $enfant && $invite->aCategorie('enfant')) {
+				// Enlever la catégorie Enfant
+				$this->_db->delete('mm_user_categorie',
+						"user_id={$invite->id} AND categorie_id=".Categories::id('enfant'));
+			} else if (1 == $enfant && !$invite->aCategorie('enfant')) {
+				// Ajouter catégorie enfant
+				$this->_db->insert('mm_user_categorie', array(
+						'user_id' => $invite->id, 'categorie_id' => Categories::id('enfant')));
 			}
 		}
 		else {
@@ -116,19 +131,19 @@ class Liste {
 			Invite::getById($plusUnId)->mettreAJour(array(
 					'nom'=> $VARS->post('plusUnNom', 'string'),
 					"prenom"=>$VARS->post('plusUnPrenom', 'string')
-				));
+			));
 		} else {
 			// Créer un nouvel invité
-			$nom = $VARS->post('plusUnNom', 'string');
-			$prenom = $VARS->post('plusUnPrenom', 'string');
-			if ("" != $nom && "" != $prenom) {
+			$nomPlusUn = $VARS->post('plusUnNom', 'string');
+			$prenomPlusUn = $VARS->post('plusUnPrenom', 'string');
+			if ("" != $nomPlusUn && "" != $prenomPlusUn) {
 				$res = Invite::ajouter(array(
-						'nom' => $nom,
-						'prenom' => $prenom,
+						'nom' => $nomPlusUn,
+						'prenom' => $prenomPlusUn,
 						'official_id' => $invite->id
 				));
 				if (!$res) {
-					$erreurs[] = "{ $nom $prenom à l'ajout }";
+					$erreurs[] = "{ $nomPlusUn $prenomPlusUn à l'ajout }";
 				}
 			}
 		}
