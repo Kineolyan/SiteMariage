@@ -42,7 +42,10 @@ class Visitor {
 	public function isAdmin() {	return $this->m_isAdmin;	}
 
 	public function hasAccess($page) {
-		if (is_int($page)) {
+		if ($this->m_isAdmin) {
+			return true;
+		}
+		else if (is_int($page)) {
 			return in_array($page, array_keys($this->m_allowedPages));
 		}
 		else if (is_string($page)) {
