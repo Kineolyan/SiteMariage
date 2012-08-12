@@ -1,22 +1,24 @@
 <?php
 
 abstract class Dba {
-	protected $m_host;
-	protected $m_database;
-	protected $m_user;
-	protected $m_password;
+	protected $_host;
+	protected $_database;
+	protected $_user;
+	protected $_password;
 
-	protected $m_db;
-	protected $m_response;
+	protected $_db;
+	protected $_response;
+	protected $_cursors;
 
 	public function __construct($host = 'localhost', $database = 'mariage', $user = 'root', $password = '') {
-		$this->m_host = $host;
-		$this->m_database = $database;
-		$this->m_user = $user;
-		$this->m_password = $password;
+		$this->_host = $host;
+		$this->_database = $database;
+		$this->_user = $user;
+		$this->_password = $password;
 
-		$this->m_db = NULL;
-		$this->m_response = NULL;
+		$this->_db = NULL;
+		$this->_response = NULL;
+		$this->_cursors = array();
 
 		$this->connect();
 	}
@@ -28,11 +30,13 @@ abstract class Dba {
 	public function __sleep() {
 		$this->endQuery();
 
-		return array('m_host', 'm_database', 'm_user', 'm_password');
+		return array('_host', '_database', '_user', '_password');
 	}
 
 	public function __wakeup() {
 		$this->db = NULL;
+		$this->_response = NULL;
+		$this->_cursors = array();
 		$this->connect();
 	}
 
@@ -48,6 +52,12 @@ abstract class Dba {
 
 	abstract public function insertedId();
 
+	/**
+	 * Exécute une insertion en BDD des données fournies.
+	 *
+	 * @param {String} $table où insérée les données
+	 * @param {Array} $elements à insérer dans un tableau colonne => valeur
+	 */
 	public function insert($table, $elements) {
 		$tableFields = '';
 		$tableValues = '';
@@ -105,9 +115,7 @@ abstract class Dba {
 	}
 
 	public function get($table, $fields, $conditions = '', $additionalParameters = array()) {
-		if (0
-				< $this
-						->select($table, $fields, $conditions, $additionalParameters)) {
+		if (0	< $this->select($table, $fields, $conditions, $additionalParameters)) {
 			$result = $this->fetch();
 			$this->endQuery();
 
@@ -131,9 +139,8 @@ abstract class Dba {
 	}
 
 	public function count($table, $field, $conditions = '1=1') {
-		$this
-				->querySQL(
-						"SELECT COUNT($field) AS total FROM $table WHERE $conditions;");
+		$this->querySQL(
+			"SELECT COUNT($field) AS total FROM $table WHERE $conditions;");
 		$response = $this->fetch();
 		$this->endQuery();
 		return $response['total'];
@@ -144,6 +151,10 @@ abstract class Dba {
 		$first = true;
 
 		foreach ($fields as $field => $value) {
+			if ("id" == $field) {
+				continue;
+			}
+
 			if (!$first) {
 				$updatedFields .= ',';
 			}

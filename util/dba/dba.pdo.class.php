@@ -14,8 +14,8 @@ class DbaPdo extends Dba {
 		global $pdo_options;
 		$pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
 
-		$this->m_db = new PDO('mysql:host='.$this->m_host.';dbname='.$this->m_database,
-				$this->m_user, $this->m_password, $pdo_options);
+		$this->_db = new PDO('mysql:host='.$this->_host.';dbname='.$this->_database,
+				$this->_user, $this->_password, $pdo_options);
 	}
 
 	public function disconnect() {
@@ -23,26 +23,31 @@ class DbaPdo extends Dba {
 	}
 
 	public function querySQL($query, $count = false) {
-		$this->m_response = $this->m_db->query($query);
+		$response = $this->_db->query($query);
+
+		if (NULL != $this->_response) {
+			array_push($this->_cursors, $this->_response);
+		}
+		$this->_response = $response;
 
 		if ($count) {
-			return $this->m_response->rowCount();
+			return $this->_response->rowCount();
 		}
 	}
 
 	public function fetch() {
-		return $this->m_response->fetch();
+		return $this->_response->fetch();
 	}
 
 	public function endQuery() {
-		if (NULL!=$this->m_response) {
-			$this->m_response->closeCursor();
-			$this->m_response = NULL;
+		if (NULL!=$this->_response) {
+			$this->_response->closeCursor();
 		}
+		$this->_response = array_pop($this->_cursors);
 	}
 
 	public function insertedId() {
-		return $this->m_db->lastInsertId();
+		return $this->_db->lastInsertId();
 	}
 }
 

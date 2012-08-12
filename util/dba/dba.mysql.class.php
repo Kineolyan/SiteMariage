@@ -9,45 +9,50 @@ class DbaMysql extends Dba {
 	}
 
 	public function connect() {
-		$this->m_db = mysql_connect($this->m_host, $this->m_user, $this->m_password);
-		if (!$this->m_db) {
+		$this->_db = mysql_connect($this->_host, $this->_user, $this->_password);
+		if (!$this->_db) {
 			throw new Exception('[Dba] Impossible de se connecter : ' . mysql_error());
 		}
 
-		if (!mysql_select_db($this->m_database)) {
+		if (!mysql_select_db($this->_database)) {
 			throw new Exception('[Dba] Impossible de sélectionner la base : ' . mysql_error());
 		}
 	}
 
 	public function disconnect() {
-		mysql_close($this->m_db);
+		mysql_close($this->_db);
 	}
 
 	public function querySQL($query, $count = false) {
-		$this->m_response = mysql_query($query);
+		$response = mysql_query($query);
 
-		if (!$this->m_response) {
+		if (!$response) {
 			throw new Exception("[Dba] Echec de la requête ($query): " . mysql_error());
 		}
 
+		if (NULL != $this->_response) {
+			array_push($this->_cursors, $this->_response);
+		}
+		$this->_response = $response;
+
 		if ($count) {
-			return mysql_num_rows($this->m_response);
+			return mysql_num_rows($this->_response);
 		}
 	}
 
 	public function fetch() {
-		return mysql_fetch_array($this->m_response);
+		return mysql_fetch_array($this->_response);
 	}
 
 	public function endQuery() {
-		if (NULL != $this->m_response) {
-			// mysql_free_result($this->m_response);
-			$this->m_response = NULL;
+		if (NULL != $this->_response) {
+			// mysql_free_result($this->_response);
 		}
+		$this->_response = array_pop($this->_cursors);
 	}
 
 	public function insertedId() {
-		return mysql_insert_id($this->m_db);
+		return mysql_insert_id($this->_db);
 	}
 
 	public function update($table, $fields, $conditions) {
@@ -66,7 +71,7 @@ class DbaMysql extends Dba {
 		}
 
 		$this->querySQL("UPDATE $table SET $updatedFields WHERE $conditions", false);
-		return mysql_affected_rows($this->m_db);
+		return mysql_affected_rows($this->_db);
 	}
 }
 
