@@ -147,6 +147,11 @@ class Invite {
 		$statut.= '</span>';
 
 		$accompagne = '';
+		if (-1 != $this->_data['plus_un']) {
+			$accompagne = '<i class="icon-plusUn"></i>';
+		} else  if (0 < $this->_db->count('invites', 'id', 'plus_un='.intval($this->_data['id']))) {
+			$accompagne = '<i class="icon-avecPlusUn"></i>';
+		}
 
 		$editionBtn = "";
 
