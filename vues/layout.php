@@ -27,11 +27,9 @@ include_once 'util/helpers/pager.class.php';
 	  </div>
 	</div>
 
-	<h1>
-		<div class="row">
-			<?php echo $this->pageTitle(); ?>
-		</div>
-	</h1>
+	<div class="row">
+		<h1><?php echo $this->pageTitle(); ?></h1>
+	</div>
 	<div id='content' class="row">
 		<?php echo $this->content(); ?>
 	</div>
