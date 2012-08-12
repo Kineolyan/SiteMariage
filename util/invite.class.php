@@ -166,7 +166,7 @@ class Invite {
 			$editionBtn = "<a href='listing.php?view=edition&id={$this->_data['id']}'><i class='icon-pencil'></i></a>";
 		}
 		$statut.= "</button></div>";
-		$content.= "<td>$statut <div class='actions'>$editionBtn $accompagne</div></td>";
+		$content.= "<td class='btn-toolbar'><div class='actions btn-group'>$editionBtn $accompagne</div> $statut</td>";
 
 		return '<tr>'.$content.'</tr>';
 	}

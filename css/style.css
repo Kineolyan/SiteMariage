@@ -10,6 +10,10 @@ input {
 	clean: both;
 }
 
+label.checkbox {
+	display: inline;
+}
+
 /* -- Specialized elements -- */
 
 .container {
@@ -56,13 +60,10 @@ ul.dropdown-menu li {
 	margin-left: 10px;
 }
 
-#invites .btn-group:after {
-	display: table-cell;
-}
-
 .actions {
+	float: left;
 	padding: 5px;
-	display: table-cell;
+	width: 50px;
 }
 
 .icon-avecPlusUn {
