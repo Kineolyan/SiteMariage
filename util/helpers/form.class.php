@@ -85,19 +85,17 @@ class Form {
 		return $radioButtons;
 	}
 
-	public function check($name, $label, $values) {
-		$checkboxes = "";
-		foreach ($values as $value => $state) {
-			$for = $this->forValue($name.'_'.$value);
+	public function check($name, $label, $value, $selected) {
+		$checkbox = "";
+		$for = $this->forValue($name.'_'.$value);
 
-			$checkboxes = "<input type='checkbox' id='$for' name='{$this->nameValue($name)}' value='$value'";
-			if ($state) {
-				$checkboxes.= " checked='checked'";
-			}
-			$checkboxes.= "/><label for='$for'>$label</label>\n";
+		$checkbox = "<input type='checkbox' id='$for' name='{$this->nameValue($name)}' value='$value'";
+		if ($selected) {
+			$checkbox.= " checked='checked'";
 		}
+		$checkbox.= "/><label class='checkbox' for='$for'>$label</label>\n";
 
-		return $checkboxes;
+		return $checkbox;
 	}
 
 	public function select($name, $label, $values, $selected='', $multiple=false) {

@@ -257,6 +257,9 @@ class Liste {
 			$inviteHtml.= $form->input("nom", "Nom", $invite->nom) .'<br/>';
 			$inviteHtml.= $form->input("prenom", "Prenom", $invite->prenom) .'<br/>';
 
+
+			$inviteHtml.= $form->check("enfant", "Est un enfant", '1', $invite->aCategorie('enfant'));
+
 			if (-1 == $invite->plus_un) {
 				$plusUn = Invite::getByQuery('plus_un='.$invite->id);
 
