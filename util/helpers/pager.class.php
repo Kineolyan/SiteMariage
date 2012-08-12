@@ -130,6 +130,18 @@ class Pager {
 		}
 	}
 
+	public function afficherErreurs() {
+		global $VARS;
+
+		$erreur = $VARS->flash("erreur", "string");
+		if ($this->visible() && NULL !== $erreur) {
+			echo "<p class=\"alert alert-error\">
+			<button class=\"close\" data-dismiss=\"alert\">×</button>
+			<strong>Erreur : </strong>$erreur
+			</p>";
+		}
+	}
+
 	public function visible() {
 		return $this->m_visitor->hasAccess($this->m_page);
 	}
