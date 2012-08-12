@@ -39,4 +39,42 @@ $(function() {
 	$('#registration .participant').each(function() {
 		ajouterBoutons($(this));
 	});
+	
+	// Valider la soumission
+	var formulaire = $('#registration');
+	formulaire.submit(function() {
+		var valid = true;
+		var erreurs = [];
+		if (0 == this.responsable.value && '' == this.nouveauLogin.value) {
+			valid = false;
+			erreurs.push('Il manque un responsable.');
+		}
+		
+		var compteur = 0;
+		formulaire.find(':input').each(function() {
+			var element = $(this);
+			
+			if (/nom/.test(element.attr('name'))) {
+				if ('' == element.attr('value')) {
+					++compteur;
+				}
+			}
+		});
+		
+		if (0 < compteur) {
+			erreurs.push(compteur + ' champs de nom/prenom sont vides.');
+			valid = false;
+		}
+
+		if (0 < erreurs.length) {
+			for (var index in erreurs) {
+				formulaire.before('<div class="alert alert-error">'
+					+'<button class="close" data-dismiss="alert">×</button>'
+					+'<strong>Erreur!</strong> ' + erreurs[index]
+					+'</div>');
+			}
+		}
+		
+		return valid;
+	})
 });
