@@ -161,12 +161,14 @@ class Liste {
 				$invite = Invite::getByData($dataInvite);
 				$content .= $invite->renderLine();
 			}
+			$this->_db->endQuery();
 
 			return '<table id="invites" class="table table-striped table-condensed">'
 				.'<thead>' . Invite::renderLineHeader() . '</thead>'
 				.'<tbody>' . $content . '</tbody>'
 				. '</table>';
 		} else {
+			$this->_db->endQuery();
 			return '<p>Aucun invité pour le moment</p>';
 		}
 	}
@@ -203,6 +205,7 @@ class Liste {
 		while ($user = $this->_db->fetch()) {
 			$users[$user['id']] = $user['login'];
 		}
+		$this->_db->endQuery();
 
 		$responsable = "";
 		if ($this->_visitor->isAdmin()) {
