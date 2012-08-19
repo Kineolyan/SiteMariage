@@ -1,6 +1,12 @@
 <?php
 
 class Variables {
+	private static $FLASH = 'flash_';
+	private static $ERREUR = '__erreur__';
+	private static $INFO = '__info__';
+	private static $WARNING = '__warning__';
+	private static $SUCCESS = '__success__';
+
 	private $m_get;
 	private $m_post;
 	private $m_ajax;
@@ -25,7 +31,7 @@ class Variables {
 		$this->m_flash = array();
 		foreach ($_SESSION as $key => $value) {
 			$parts = array();
-			if (preg_match("#^flash_([a-zA-Z].+)$#", $key, $parts)) {
+			if (preg_match("#^".self::$FLASH."([a-zA-Z_].+)$#", $key, $parts)) {
 				$this->m_flash[$parts[1]] = $value;
 				unset($_SESSION[$key]);
 			}
@@ -112,5 +118,53 @@ class Variables {
 			default:
 				return $value;
 		}
+	}
+
+	private function setFlashMessage($type, $message) {
+		if (!isset($_SESSION[Variables::$FLASH.$type])) {
+			$_SESSION[Variables::$FLASH.$type] = array();
+		}
+
+		$_SESSION[Variables::$FLASH.$type][] = $message;
+	}
+
+	public function erreur($message) {
+		$this->setFlashMessage(self::$ERREUR, $message);
+	}
+
+	public function warning($message) {
+		$this->setFlashMessage(self::$WARNING, $message);
+	}
+
+	public function succes($message) {
+		$this->setFlashMessage(self::$SUCCESS, $message);
+	}
+
+	public function info($message) {
+		$this->setFlashMessage(self::$INFO, $message);
+	}
+
+	public function renderMessages($type, $titre, $class) {
+		$messages = '';
+
+		if (isset($this->m_flash[$type])) {
+			foreach ($this->m_flash[$type] as $message) {
+				$messages.= "<p class=\"alert $class\">
+				<button class=\"close\" data-dismiss=\"alert\">×</button>
+				<strong>$titre : </strong>$message
+				</p>";
+			}
+		}
+
+		return $messages;
+	}
+
+	public function afficherMessages() {
+		$messages = $this->renderMessages(self::$ERREUR, 'Erreur', 'alert-error');
+		$messages.= $this->renderMessages(self::$WARNING, 'Warning', 'alert-block');
+		$messages.= $this->renderMessages(self::$SUCCESS, 'Succés', 'alert-success');
+		$messages.= $this->renderMessages(self::$INFO, 'Info', 'alert-info');
+
+		return $messages;
 	}
 }
