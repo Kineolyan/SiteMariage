@@ -67,8 +67,7 @@ abstract class Dba {
 			if (!$first) {
 				$tableFields .= ',' . $field;
 				$tableValues .= ",'$value'";
-			}
-			else {
+			} else {
 				$first = false;
 				$tableFields .= $field;
 				$tableValues .= "'$value'";
@@ -76,6 +75,7 @@ abstract class Dba {
 		}
 
 		$this->querySQL("INSERT INTO $table($tableFields) VALUES($tableValues);");
+		$this->endQuery();
 
 		return $this->insertedId();
 	}
@@ -115,15 +115,14 @@ abstract class Dba {
 	}
 
 	public function get($table, $fields, $conditions = '', $additionalParameters = array()) {
-		if (0	< $this->select($table, $fields, $conditions, $additionalParameters)) {
+		if (0 < $this->select($table, $fields, $conditions, $additionalParameters)) {
 			$result = $this->fetch();
-			$this->endQuery();
+		} else {
+			$result = NULL;
+		}
 
-			return $result;
-		}
-		else {
-			return NULL;
-		}
+		$this->endQuery();
+		return $result;
 	}
 
 	public function getSingleDatum($table, $field, $conditions = '', $additionalParameters = array()) {
@@ -132,15 +131,14 @@ abstract class Dba {
 			$this->endQuery();
 
 			return $result[0];
-		}
-		else {
+		} else {
+			$this->endQuery();
 			return NULL;
 		}
 	}
 
 	public function count($table, $field, $conditions = '1=1') {
-		$this->querySQL(
-			"SELECT COUNT($field) AS total FROM $table WHERE $conditions;");
+		$this->querySQL("SELECT COUNT($field) AS total FROM $table WHERE $conditions;");
 		$response = $this->fetch();
 		$this->endQuery();
 		return intval($response['total']);
@@ -157,8 +155,7 @@ abstract class Dba {
 
 			if (!$first) {
 				$updatedFields .= ',';
-			}
-			else {
+			} else {
 				$first = false;
 			}
 
@@ -172,20 +169,18 @@ abstract class Dba {
 	}
 
 	public function delete($table, $conditions) {
-		$result = $this->querySQL("DELETE FROM $table WHERE $conditions", true);
+		$this->querySQL("DELETE FROM $table WHERE $conditions", false);
 		$this->endQuery();
 
-		return $result;
+		return -1;
 	}
 
 	protected function formatValue($value) {
 		if (is_int($value)) {
 			return $value;
-		}
-		else if ('NOW()' === $value) {
+		} else if ('NOW()' === $value) {
 			return 'NOW()';
-		}
-		else {
+		} else {
 			return "'$value'";
 		}
 	}

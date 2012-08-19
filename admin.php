@@ -108,6 +108,7 @@ $page->afficherErreurs();
 	} else {
 		echo '<p id="noCategorie">Pas de catégorie.</p>';
 	}
+	$DB->endQuery();
 ?>
   			</div>
   			<div class="span6 offset6">

@@ -117,6 +117,7 @@ class Visitor {
 			return $response['id'];
 		}
 		else {
+			$this->m_db->endQuery();
 			return '-1';
 		}
 	}
