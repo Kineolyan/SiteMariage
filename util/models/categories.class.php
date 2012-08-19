@@ -1,7 +1,7 @@
 <?php
 
 class Categories {
-	public static $categories = array();
+	private static $categories = array();
 
 	public static function init($db) {
 		if (0 < $db->select('categories', 'id, categorie', '')) {
@@ -29,5 +29,8 @@ class Categories {
 		return '';
 	}
 
+	public static function getCategories() {
+		return self::$categories;
+	}
 }
 
