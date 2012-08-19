@@ -19,7 +19,7 @@ class Invite {
 			$this->_data = $data;
 		}
 		else {
-			throw new Exception("Impossible de créer un invité sans id ou données.");
+			throw new Exception("Impossible de créer un invité sans id ou données {id = $id, data = $data}");
 		}
 		$this->_editable = ($this->_visitor->id() == $this->_data['official_id']
 				|| $this->_visitor->isAdmin());
@@ -95,18 +95,25 @@ class Invite {
 		global $DB;
 
 		if (Invite::verifierDonnees($data)) {
+			// Ajout du timestamp
+			$data['last_modification'] =  'NOW()';
+
 			if (0 == $DB->count('invites', 'id',
 					'nom="'.Variables::sanitize($data['nom']).'" AND prenom="'.Variables::sanitize($data['prenom']).'"')) {
-				$DB->insert('invites', $data);
-				return true;
+				$idAjout = $DB->insert('invites', $data);
+
+				return self::getById($idAjout);
 			}
 		}
 
-		return false;
+		return NULL;
 	}
 
 	public function mettreAJour($data) {
 		if (Invite::verifierDonnees($data)) {
+			// Ajout du timestamp
+			$data['last_modification'] =  'NOW()';
+
 			$this->_db->update('invites', $data, 'id='.$this->_data['id']);
 			return true;
 		}
@@ -114,7 +121,13 @@ class Invite {
 	}
 
 	static private function verifierDonnees($data) {
-		$requiredFields = array();
+		$requiredFields = array('nom', 'prenom');
+
+		foreach ($requiredFields as $field) {
+			if (!isset($data[$field]) || '' == $data[$field]) {
+				return false;
+			}
+		}
 
 		return true;
 	}
