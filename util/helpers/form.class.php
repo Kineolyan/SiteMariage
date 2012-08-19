@@ -1,33 +1,35 @@
 <?php
 
 class Form {
-	private $m_name;
-	private $m_itemId;
-	private $m_useId;
-	private $m_multipleFields;
-	private static $NO_ID = -1;
-	private static $MULTIPLE_ID = -2;
+	private $_name;
+	private $_itemId;
+	private $_useId;
+	private $_multipleFields;
+	public static $NO_ID = -1;
+	public static $MULTIPLE_ID = -2;
 
 	public function __construct($name, $itemId = -1) {
-		$this->m_name = $name;
+		$this->_name = $name;
 		if (self::$NO_ID != $itemId) {
-			$this->m_itemId = $itemId;
-			$this->m_useId = true;
-			$this->m_multipleFields = false;
+			$this->_itemId = $itemId;
+			$this->_useId = true;
+			$this->_multipleFields = false;
 		}
 		else if (self::$MULTIPLE_ID == $itemId) {
-			$this->m_itemId = self::$MULTIPLE_ID;
-			$this->m_useId = false;
-			$this->m_multipleFields = true;
+			$this->_itemId = self::$MULTIPLE_ID;
+			$this->_useId = false;
+			$this->_multipleFields = true;
 		}
 		else {
-			$this->m_itemId = self::$NO_ID;
-			$this->m_useId = false;
-			$this->m_multipleFields = false;
+			$this->_itemId = self::$NO_ID;
+			$this->_useId = false;
+			$this->_multipleFields = false;
 		}
 	}
 
-	public function useId($use) {	$this->m_useId = $use;	}
+	public function useId($use) {	$this->_useId = $use;	}
+
+	public function multipleFields($use) {	$this->_multipleFields = $use;	}
 
 	public function create($action, $id='', $class='', $attributes=array()) {
 		$parametres = '';
@@ -52,20 +54,11 @@ class Form {
 	}
 
 	public function input($name, $label, $value='') {
-		if ('' != $label) {
-			$for = $this->forValue($name);
-			return "<label for='$for'>$label</label>
-				<input type='text' id='$for' name='{$this->nameValue($name)}' value='$value'/>\n";
-		} else {
-			return "<input type='text' name='{$this->nameValue($name)}' value='$value'/>\n";
-		}
+		return $this->inputTag('text', $name, $value, array('label' => $label));
 	}
 
 	public function password($name, $label, $value='') {
-		$for = $this->forValue($name);
-
-		return "<label for='$for'>$label</label>
-		<input type='password' id='$for' name='{$this->nameValue($name)}' value='$value'/>\n";
+		return $this->inputTag('password', $name, $value, array('label' => $label));
 	}
 
 	public function radio($name, $label, $values) {
@@ -125,28 +118,48 @@ class Form {
 	}
 
 	public function hidden($name, $value='') {
-		$for = $this->forValue($name);
-
-		return "<input type='hidden' name='{$this->nameValue($name)}' value='$value'/>\n";
+		return $this->inputTag('hidden', $name, $value);
 	}
 
-	public function submit($name, $value) {
-		$for = $this->forValue($name);
-
-		return "<input type='submit' name='{$this->nameValue($name)}' value='$value'/>\n";
+	public function submit($name, $value, $params = array()) {
+		return $this->inputTag('submit', $name, $value, $params);
 	}
 
 	// Fonctions accessoires
 
+	private function inputTag($type, $name, $value, $params = array()) {
+		$id = isset($params['id'])?  "id='$params[id]'": '';
+		$class = isset($params['class'])?  "class='$params[class]'": '';
+
+		if (isset($params['label']) && '' != $params['label']) {
+			if ('' == $id) {
+				$for = $this->forValue($name);
+				$id = "id='$for'";
+			} else {
+				$for = $id;
+			}
+			$labelHtml = "<label for='$for'>$params[label]</label>";
+		} else {
+			$labelHtml = '';
+		}
+
+		return "$labelHtml <input type='$type' $id $class name='{$this->nameValue($name)}' value='$value'/>\n";
+	}
+
 	private function nameValue($name) {
-		$suffixe = (self::$NO_ID!=$this->m_itemId && $this->m_useId)?
-			/*"[{$this->m_itemId}]"*/ '[]': '';
+		if (self::$NO_ID!=$this->_itemId && $this->_useId) {
+			$suffixe = "[{$this->_itemId}]";
+		} else if (self::$NO_ID!=$this->_itemId && $this->_multipleFields) {
+			$suffixe = '[]';
+		} else {
+			$suffixe = '';
+		}
 		return $name.$suffixe;
 	}
 
 	private function forValue($name) {
-		$suffixe = (self::$NO_ID!=$this->m_itemId && $this->m_useId)?
-			"[{$this->m_itemId}]": '';
-		return $this->m_name.'_'.$name.$suffixe;
+		$suffixe = (self::$NO_ID!=$this->_itemId && ($this->_useId || $this->_multipleFields)	)?
+			"[{$this->_itemId}]": '';
+		return $this->_name.'_'.$name.$suffixe;
 	}
 }
