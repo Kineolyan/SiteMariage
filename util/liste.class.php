@@ -29,7 +29,9 @@ class Liste {
 			Pager::redirect('listing.php?view=liste');
 			break;
 
-		default:
+		case 'categorize':
+			$this->updateCategories();
+			Pager::redirect('listing.php?view=categories');
 			break;
 		}
 	}
@@ -323,8 +325,93 @@ class Liste {
 	}
 
 	public function deletionView() {
+	/* -- Categories -- */
 
+	public function categoriesView() {
+		$form = new Form('CategoriesForm');
+
+		$headers = '<tr><th></th>';
+		foreach (Categories::getCategories() as $id => $categorie) {
+			$headers .= "<th class='check' category='$categorie'>$categorie</th>";
+		}
+		$headers .= '</tr>';
+
+		$rows = array();
+		if (0 < $this->_db->select('invites', 'id', '', array('orderBy' => 'nom ASC, prenom ASC'))) {
+			while ($inviteData = $this->_db->fetch()) {
+				$invite = Invite::getById(intval($inviteData['id']));
+
+				$row = "<tr><td>{$invite->nom} {$invite->prenom}</td>";
+				foreach (Categories::getCategories() as $id => $categorie) {
+					$row .= "<td class='check' category='$categorie'>"
+							. $form->check("links[$invite->id][$id]", "", "",
+									$invite->aCategorie($categorie)) . "</td>";
+				}
+				$row .= '</tr>';
+
+				$rows[] = $row;
+			}
+		}
+
+		$formHtml = $form->create('listing.php', 'categoriesForm');
+		$formHtml .= "<table id='categoriesTable' class='table table-striped'>" . '<thead>'
+				. $headers . '</thead>' . '<tbody>' . implode("\n", $rows) . '</tbody></table>';
+		$formHtml .= $form->hidden('action', 'categorize');
+		$formHtml .= $form
+				->submit('', 'Enregistrer les catégories', array('class' => 'btn btn-success'));
+		$formHtml .= $form->end();
+
+		return $formHtml;
 	}
 
+	public function updateCategories() {
+		global $VARS;
+
+		$nbErreurs = 0;
+		$categoriesIds = array_keys(Categories::getCategories());
+		$links = $VARS->post('links', 'array');
+
+		$this->_db->select('invites', 'id', '');
+		while ($invitesData = $this->_db->fetch()) {
+			try {
+				$inviteId = intval($invitesData['id']);
+				if (!isset($links[$inviteId])) {
+					$this->_db->delete('mm_user_categorie', "user_id=$inviteId");
+					continue;
+				}
+
+				$selectedCategories = $links[$inviteId];
+				$invite = Invite::getById($inviteId);
+
+				// Trouver les modifications
+				$suppressions = array();
+				foreach ($categoriesIds as $categorieId) {
+					if ($invite->aCategorie($categorieId) && !isset($selectedCategories[$categorieId])) {
+						$suppressions[] = "(user_id={$invite->id} AND categorie_id=$categorieId)";
+					} else if (!$invite->aCategorie($categorieId)
+							&& isset($selectedCategories[$categorieId])) {
+						// Ajouter une nouvelle categorie pour l'invité
+						$this->_db ->insert('mm_user_categorie',
+										array('user_id' => $invite->id, 'categorie_id' => $categorieId));
+					}
+				}
+
+				// on supprime tous en une fois
+				if (0 < count($suppressions)) {
+					$this->_db->delete('mm_user_categorie', implode(' OR ', $suppressions));
+				}
+			} catch (Exception $e) {
+				++$nbErreurs;
+				$VARS->erreur('Mise à jour impossible pour l\'invite d\'id ' . $inviteId);
+				continue;
+			}
+
+		}
+		$this->_db->endQuery();
+
+		if (0 == $nbErreurs) {
+			$VARS->succes('Mise à jour de tous les invités réussie.');
+		}
+	}
 	// Fonctions élémentaires
 }
