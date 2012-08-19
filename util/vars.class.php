@@ -7,6 +7,8 @@ class Variables {
 	private static $WARNING = '__warning__';
 	private static $SUCCESS = '__success__';
 
+	private static $AJAX = '__ajax__';
+
 	private $m_get;
 	private $m_post;
 	private $m_ajax;
@@ -14,8 +16,8 @@ class Variables {
 	private $m_isAjaxRequest;
 
 	public function __construct() {
-		if ((isset($_POST['ajax']) && '1'==$_POST['ajax'])
-		 || (isset($_GET['ajax']) && '1'==$_GET['ajax'])) {
+		if ((isset($_POST[self::$AJAX]) && '1'==$_POST[self::$AJAX])
+		 || (isset($_GET[self::$AJAX]) && '1'==$_GET[self::$AJAX])) {
 			$this->m_ajax = Variables::secureVars(array_merge_recursive($_POST, $_GET));
 			$this->m_get = array();
 			$this->m_post = array();
