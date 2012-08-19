@@ -66,6 +66,7 @@ class Visitor {
 		}
 		else if (isset($_POST['deconnexion'])) {
 			$this->logout();
+			Pager::redirect('accueil.php');
 		}
 	}
 
