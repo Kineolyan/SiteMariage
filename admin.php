@@ -9,23 +9,20 @@ $page->pageTitle('Page d\'administration du site');
 // Traitement des soumissions des formulaires
 if ($page->visible()) {
 	if ($VARS->isAjaxRequest()) {
-		Admin::gererAjax();
+		echo Admin::gererAjax();
 		$page->renderAjax();
+		exit;
 	}
 	else if (NULL !== $VARS->post('action')) {
-		Admin::gererSoumission();
-		Pager::redirect("admin.php");
+		if (Admin::gererSoumission()) {
+			Pager::redirect("admin.php");
+		}
 	}
 }
 
 $page->addJs('javascript/admin.js');
 
-$messages = $VARS->get('message');
-if (NULL !== $messages) {
-	echo "<div class='alert alert-success'>$messages</div>";
-}
-
-$page->afficherErreurs();
+echo "<div class='messages'>{$VARS->afficherMessages()}</div>";
 
 ?>
 
@@ -37,47 +34,52 @@ $page->afficherErreurs();
   </ul>
   <div class="tab-content">
     <div class="tab-pane active" id="tab1">
-		<h2>Pages du site</h2>
-		<ul id='pageList'>
-		<?php
-		$DB->select('pages', 'id, title', '', array('orderBy'=>'id'));
-		while ($pageItem = $DB->fetch()) {
-			echo "<li>[{$pageItem['id']}] - $pageItem[title]";
-		}
-		$DB->endQuery();
-		?>
-		</ul>
+		<h2>Droits d'accès</h2>
 
 		<?php
-
 		// Créer un formulaire pour chaque utilisateur
-		$usersForms = '';
-		$DB->select('users', '*', '', array('orderBy'=>'login'));
-		while ($user = $DB->fetch()) {
-			$form = new Form('userAccess', $user['id']);
-			$htmlForm = $form->create('', '', 'accessForm');
-			$htmlForm.= $form->input('userAccess', $user['login'], $user['allowed_pages']).'</br>';
-			$htmlForm.= $form->check('admin', 'admin', '1', '1'==$user['admin']).'<br/>';
+		$formUser = new Form('userSelection');
+		$htmlForm = $formUser->create('', '', 'selectionForm');
 
-			$form->useId(false);
-			$htmlForm.= $form->hidden('action', 'update');
-			$htmlForm.= $form->hidden('userId', $user['id']);
-			$htmlForm.= $form->submit('', 'Mettre à jour');
-			$htmlForm.= $form->end();
-
-			$usersForms.= $htmlForm;
-		}
-		$DB->endQuery();
-
-		echo $usersForms;
-
-		// Créer un formulaire pour changer le mot de passe
-		$DB->select('users', 'id, login', '', array('orderBy'=>'login'));
 		$users = array();
+		$currentUserLogin = 'anonymous';
+		if ('' != $VARS->post('editLogin', 'string')) {
+			$currentUserLogin = $VARS->post('editLogin', 'string');
+		} else if ('' != $VARS->flash('editLogin', 'string')) {
+			$currentUserLogin = $VARS->flash('editLogin', 'string');
+		}
+
+		$DB->select('users', 'id, login, allowed_pages, admin', '', array('orderBy'=>'login'));
 		while ($user = $DB->fetch()) {
-			$users[$user['id']] = $user['login'];
+			$users[$user['login']] = $user['login'];
+			if ($user['login'] == $currentUserLogin) {
+				$currentUser = $user;
+			}
 		}
 		$DB->endQuery();
+		$htmlForm.= $formUser->select('editLogin', '', $users, $currentUserLogin);
+		$htmlForm.= $formUser->submit('editer', 'Go', array('id' => 'goSubmitBtn')).'<br/>';
+
+		$formAccess = new Form('userAccess');
+ 		$htmlForm.= '<div id="userProfile">'.$formUser->check('admin', 'Est un administrateur', '1', '1'==$currentUser['admin']);
+
+		$htmlForm.= "<ul id='pagesList'>";
+		$DB->select('pages', 'id, title', '', array('orderBy'=>'title'));
+		$currentSelectedPages = explode(',', $currentUser['allowed_pages']);
+		while ($pageItem = $DB->fetch()) {
+			$htmlForm.= '<li>'.$formUser->check("selectedPages[]", $pageItem['title'], $pageItem['id'],
+					in_array($pageItem['id'], $currentSelectedPages)).'</li>';
+		}
+		$DB->endQuery();
+		$htmlForm.= "</ul>";
+
+		$htmlForm.= $formUser->hidden('action', 'updateAccess');
+		$htmlForm.= $formUser->hidden('userId', $currentUser['id']).'</div>';
+		$htmlForm.= $formUser->submit('mettreAJour', 'Mettre à jour les droits',
+				array('id' => 'accessSubmitBtn', 'class' => 'btn'));
+		$htmlForm.= $formUser->end();
+
+		echo $htmlForm;
 ?>
 	</div>
 	<div class="tab-pane" id="tab2">
@@ -111,10 +113,10 @@ $page->afficherErreurs();
 	$DB->endQuery();
 ?>
   			</div>
-  			<div class="span6 offset6">
+  			<div class="span6">
 <?php
 		$passwordForm = new Form('categories');
-		echo $passwordForm->create('', 'categories', '');
+		echo $passwordForm->create('', 'categoriesForm', '');
 		echo $passwordForm->input('categorie', 'Titre pour la nouvelle catégorie');
 		echo $passwordForm->hidden('action', 'ajouterCategorie');
 		echo $passwordForm->submit('', 'Ajouter');
@@ -128,5 +130,4 @@ $page->afficherErreurs();
 
 <?php
 $page->render();
-
 ?>

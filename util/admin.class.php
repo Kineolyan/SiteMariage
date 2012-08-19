@@ -4,18 +4,22 @@ class Admin {
 	public static function gererSoumission() {
 		global $VARS, $DB;
 
-		$messages = '';
 		switch ($VARS->post('action')) {
-			case 'update':
-				$id = $VARS->post('userId', 'int');
-				$access = $VARS->post('userAccess');
-				$adminStatus = $VARS->post('admin');
-				$DB->update('users', array(
-						'allowed_pages' => $access[0],
-						'admin' => $adminStatus[0]
-				),
-						"id=$id");
-				break;
+			case 'updateAccess':
+				if ('' != $VARS->post('mettreAJour', 'string')) {
+					$id = $VARS->post('userId', 'int');
+					$access = $VARS->post('selectedPages');
+					$adminStatus = $VARS->post('admin', 'int');
+					$DB->update('users', array(
+						'allowed_pages' => implode(',', $access), 'admin' => $adminStatus
+					), "id=$id");
+
+					$VARS->setFlash('editLogin', $VARS->post('editLogin'));
+					$VARS->succes('Droits mis à jour');
+					return true;
+				}
+
+				return false;
 
 			case 'updatePassword':
 				$password1 = $VARS->post('password1', 'string');
@@ -25,39 +29,44 @@ class Admin {
 					$DB->update('users',
 							array('password' => Visitor::cryptPassword($password1)),
 							"id=$userId");
-					$messages.= "<p>Nouveau mot de passe pour $userId: $password1 [ok]</p>";
+					$VARS->succes("Mot de passe mis à jour");
 				}
 				else {
+					$VARS->erreur("Impossible de mettre à jour le mot de passe");
 				}
-				break;
+				return true;
 
 			case 'ajouterCategorie':
 				$categorie = $VARS->post('categorie', 'string');
 				if (-1 == Admin::ajouterCategorie($categorie)) {
-					$VARS->setFlash('erreur', 'Impossible d\'ajouter la catégorie '.$categorie);
+					$VARS->erreur('Impossible d\'ajouter la catégorie '.$categorie);
 				}
-				break;
+				return true;
 		}
-
-		$VARS->setFlash('message', $messages);
 	}
 
 	public static function gererAjax() {
+		global $VARS;
+
 		switch ($VARS->ajax('action')) {
-			case 'ajouterCategorie':
-				$categorie = $VARS->post('categorie', 'string');
-				if (-1 == Admin::ajouterCategorie($categorie)) {
-					return '{"erreur": "Impossible d\'ajouter la catégorie"}';
-				} else {
-					return "{\"succes\": \"$categorie\"}";
-				}
+		case 'ajouterCategorie':
+			$categorie = $VARS->ajax('categorie', 'string');
+			if (true -1 != Admin::ajouterCategorie($categorie)) {
+				return "{\"success\": \"$categorie\"}";
+			} else {
+				return '{"erreur": "Impossible d\'ajouter la catégorie"}';
+			}
+			break;
+
+		default:
+			return '{}';
 		}
 	}
 
 	public static function ajouterCategorie($categorie) {
 		global $DB;
 
-		if ('' != $categorie) {
+		if ('' != $categorie && 0 == $DB->count('categories', '*', "categorie='$categorie'")) {
 			return $DB->insert('categories', array('categorie' => $categorie));
 		}
 
