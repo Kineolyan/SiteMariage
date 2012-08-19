@@ -32,7 +32,8 @@ class Pager {
 		$this->m_css = array('bootstrap/css/bootstrap.min.css',
 				'bootstrap/css/bootstrap-responsive.min.css', 'css/style.css');
 		$this->m_js = array('javascript/jquery-1.7.2.min.js',
-				'bootstrap/js/bootstrap.min.js', 'javascript/general.js');
+				'bootstrap/js/bootstrap.min.js', 'javascript/library.js',
+				'javascript/general.js');
 
 		$this->m_visitor->manageConnection();
 		if ($capture) {
@@ -127,18 +128,6 @@ class Pager {
 			$html .= '</p>' . $connectionForm->end();
 
 			return $html;
-		}
-	}
-
-	public function afficherErreurs() {
-		global $VARS;
-
-		$erreur = $VARS->flash("erreur", "string");
-		if ($this->visible() && NULL !== $erreur) {
-			echo "<p class=\"alert alert-error\">
-			<button class=\"close\" data-dismiss=\"alert\">×</button>
-			<strong>Erreur : </strong>$erreur
-			</p>";
 		}
 	}
 
