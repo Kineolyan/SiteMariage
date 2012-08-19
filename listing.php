@@ -22,9 +22,6 @@ else {
 	$page->title = 'Invités';
 	$page->pageTitle = 'Liste des invités';
 
-	$page->addJs('javascript/listing.liste.js');
-	$page->addJs('javascript/jquery.tablesorter.min.js');
-
 // 	$page->sousMenu(array(
 // 			'Actions' => array(
 // 				'listing.php?view=liste' => 'Liste',
@@ -52,20 +49,15 @@ else {
 		<?php if('listePerso' == $VARS->get('view')) { ?>
 		<li><a href='listing.php'>Liste complète</a></li>
 		<?php } ?>
+		<li><a href='listing.php?view=categories'>Catégories</a></li>
 	</ul>
 </div>
 
 <div class="span10">
 <?php
-	$page->afficherErreurs();
+	echo "<div class='row'>{$VARS->afficherMessages()}</div>";
 
-	$searchBarHtml = '<div class="row" id="searchBar">
-			<span id="searchForm" style="display: none">
-				<input id="searchItem" value=""/>
-				<button id="resetSearch" class="btn">Reset</button>
-			</span>
-			<span id="loupe" class="btn btn btn-info">Rechercher quelqu\'un</span>
-		</div>';
+	$searchBarHtml = '<div class="row" id="searchBar"></div>';
 
 	$liste = new Liste();
 	$liste->gererSoumission();
@@ -78,15 +70,24 @@ else {
 
 	case 'listePerso':
 		echo $searchBarHtml . $liste->personnalListView();
+		$page->addJs('javascript/listing.liste.js');
+		$page->addJs('javascript/jquery.tablesorter.min.js');
 		break;
 
 	case 'edition':
 		echo $liste->editionView();
 		break;
 
+	case 'categories':
+		echo $searchBarHtml . $liste->categoriesView();
+		$page->addJs('javascript/listing.categories.js');
+		break;
+
 	case 'liste':
 	default:
 		echo $searchBarHtml . $liste->listView();
+		$page->addJs('javascript/listing.liste.js');
+		$page->addJs('javascript/jquery.tablesorter.min.js');
 	}
 ?>
 </div>
