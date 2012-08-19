@@ -111,7 +111,7 @@ class Visitor {
 	}
 
 	private function getPageId($pageTitle) {
-		if (0<$this->m_db->select('pages', 'id', "title='$pageTitle'", true)) {
+		if (0 < $this->m_db->select('pages', 'id', "title='$pageTitle'", true)) {
 			$response = $this->m_db->fetch();
 			$this->m_db->endQuery();
 			return $response['id'];

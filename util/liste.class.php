@@ -178,10 +178,9 @@ class Liste {
 			}
 			$this->_db->endQuery();
 
-			return '<table id="invites" class="table table-striped table-condensed">'
-				.'<thead>' . Invite::renderLineHeader() . '</thead>'
-				.'<tbody>' . $content . '</tbody>'
-				. '</table>';
+			return '<table id="invites" class="table table-striped table-condensed">' . '<thead>'
+					. Invite::renderLineHeader() . '</thead>' . '<tbody>' . $content . '</tbody>'
+					. '</table>';
 		} else {
 			$this->_db->endQuery();
 			return '<p>Aucun invité pour le moment</p>';
@@ -195,7 +194,7 @@ class Liste {
 	 * @return string contenant la liste
 	 */
 	public function personnalListView() {
-		if (0 < $this->_db->select('invites', '*', 'official_id='.$this->_visitor->id())) {
+		if (0 < $this->_db->select('invites', '*', 'official_id=' . $this->_visitor->id())) {
 			$content = '';
 			while ($dataInvite = $this->_db->fetch()) {
 				$invite = Invite::getByData($dataInvite);
@@ -227,7 +226,8 @@ class Liste {
 		$responsable = "";
 		if ($this->_visitor->isAdmin()) {
 			$responsable .= $form->select('responsable', 'Responsable', $users, 0) . '&nbsp;';
-			$responsable .= " ou un nouveau responsable: " . $form->input('nouveauLogin', '') . '</br>';
+			$responsable .= " ou un nouveau responsable: " . $form->input('nouveauLogin', '')
+					. '</br>';
 		} else {
 			$responsable .= $form->hidden('responsable', $this->_visitor->id());
 		}
@@ -248,14 +248,12 @@ class Liste {
 			$participants .= $participant;
 		}
 
-		$page->content("
-			{$form->create('listing.php', 'registration')}
+		$page->content("{$form->create('listing.php', 'registration')}
 			$responsable
 			$participants
 			{$form->hidden('action', 'registration')}
 			{$form->submit('', 'Enregistrer')}
-			{$form->end()}"
-		);
+			{$form->end()}");
 
 		return $page->renderComponent();
 	}
