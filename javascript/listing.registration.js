@@ -1,5 +1,5 @@
 $(function() {
-	var indiceParticipant, participantHtml;
+	var indiceParticipant, participantHtml, participantId;
 	
 	function getContainer(bouton) {
 		return bouton.parent().parent();
@@ -8,10 +8,11 @@ $(function() {
 	function ajouterBoutons(container) {
 		var plus = $("<span class='plus'><img src='data/plus.gif'/></span>").click(addParticipant),
 			moins = $("<span class='moins'><img src='data/moins.gif'/></span>").click(removeParticipant),
+			plusUn = $('<i class="icon-avecPlusUn"></i>').click(togglePlus),
 			boutons = $('<div class="plus_moins"></div>')
-				.append(plus).append(moins);
+				.append(plus).append(moins).append(plusUn);
 
-		return container.append(boutons);
+		return container.prepend(boutons);
 	}
 	
 	function removeParticipant() {
@@ -26,15 +27,23 @@ $(function() {
 	function addParticipant() {
 		var container = getContainer($(this));
 		
-		var part = $(participantHtml);
+		var part = $(participantHtml.replace(/\[\d*\]/g, '['+ (participantId++) +']'));
 		container.after(ajouterBoutons(part));
 		++indiceParticipant;
 	}
 	
+	function togglePlus() {
+		var container = getContainer($(this));
+		
+		var duration = 300;
+		container.find('div.otherParams').slideToggle(duration);
+		container.find('div.plusUn').delay(duration).slideToggle(duration);
+	}
+	
 	
 	participantHtml = $('#registration .participant:last')[0].outerHTML;
-	$('#registration .participant:last').after(participantHtml);
 	indiceParticipant = $('#registration').children('.participant').size();
+	participantId = indiceParticipant;
 	
 	$('#registration .participant').each(function() {
 		ajouterBoutons($(this));
@@ -53,6 +62,10 @@ $(function() {
 		var compteur = 0;
 		formulaire.find(':input').each(function() {
 			var element = $(this);
+			
+			if (/plusUn/.test(element.attr('name'))) {
+				return;
+			}
 			
 			if (/nom/.test(element.attr('name'))) {
 				if ('' == element.attr('value')) {
@@ -76,5 +89,6 @@ $(function() {
 		}
 		
 		return valid;
-	})
+	});
+	formulaire.find('div.plusUn').hide();
 });

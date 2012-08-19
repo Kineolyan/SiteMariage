@@ -33,53 +33,6 @@ class Liste {
 			$this->updateCategories();
 			Pager::redirect('listing.php?view=categories');
 			break;
-		}
-	}
-
-	private function registerGuests() {
-		global $VARS;
-
-		$noms = $VARS->post('nom');
-		$prenoms = $VARS->post('prenom');
-		$nbInvites = count($noms);
-
-		// Récupérer l'id du responsable
-		$responsableId = $VARS->post('responsable', 'int');
-		if (NULL == $responsableId || 0 == $responsableId) {
-			$loginResponsable = $VARS->post('nouveauLogin');
-			if (NULL == $loginResponsable || '' == $loginResponsable) {
-				$VARS->setFlash("erreur", 'Pas de responsable pour les invités');
-				return;
-			}
-			// Créer un nouveau compte
-			$responsableId = $this->_db->insert('users', array(
-				'login' => $loginResponsable,
-				'password' => Visitor::$DEFAULT_PASSWORD,
-				'allowed_pages' => '1,2,3'
-			));
-		}
-
-		$erreurs = array();
-		for ($i = 0; $i < $nbInvites; ++$i) {
-			if ("" != $noms[$i] && "" != $prenoms[$i]) {
-				$res = Invite::ajouter(array(
-					'nom' => $noms[$i],
-					'prenom' => $prenoms[$i],
-					'official_id' => $responsableId,
-					'plus_un' => $responsableId
-				));
-				if (!$res) {
-					$erreurs[] = "{ $noms[$i] $prenoms[$i] à l'ajout }";
-				}
-			}
-			else {
-				$erreurs[] = "{ $noms[$i] $prenoms[$i] }";
-			}
-		}
-		if (!empty($erreurs)) {
-			$VARS->setFlash("erreur", 'Enregistrements impossibles pour '.implode(', ', $erreurs));
-		}
-	}
 
 	private function updateGuests() {
 		global $VARS;
@@ -239,12 +192,15 @@ class Liste {
 			$participantForm = new Form('registration', $i);
 
 			$participant = "<div class='participant row'>";
-			$participant .= "<div class='input'>"
-				. $participantForm->input('nom', 'Nom')
-				. '</div>';
-			$participant .= "<div class='input'>"
-				. $participantForm->input('prenom', 'Prenom')
-				. '</div>';
+			$participant .= "<div class='invite'><h3>Invité :</h3>";
+			$participant .= "<div class='input'>" . $participantForm->input('nom', 'Nom') . '</div>';
+			$participant .= "<div class='input'>" . $participantForm->input('prenom', 'Prenom'). '</div>';
+			$participant .= '<div class="otherParams">'
+					. $participantForm->check('enfant', 'Est un enfant', '1', false) . '</div>';
+			$participant .= '</div>';
+			$participant .= "<div class='plusUn'><h3>Accompagné de :</h3>";
+			$participant .= "<div class='input'>" . $participantForm->input('plusUnNom', 'Nom') . '</div>';
+			$participant .= "<div class='input'>" . $participantForm->input('plusUnPrenom', 'Prenom'). '</div>';
 			$participant .= '</div>';
 
 			$participants .= $participant;
@@ -260,6 +216,66 @@ class Liste {
 		return $page->renderComponent();
 	}
 
+	private function registerGuests() {
+		global $VARS;
+
+		$noms = $VARS->post('nom');
+		$prenoms = $VARS->post('prenom');
+		$plusUnNoms = $VARS->post('plusUnNom');
+		$plusUnPrenoms = $VARS->post('plusUnPrenom');
+		$statutEnfants = $VARS->post('enfant');
+		$keys = array_keys($noms);
+
+		if (count($noms) == count($prenoms)) {
+			// Récupérer l'id du responsable
+			$responsableId = $VARS->post('responsable', 'int');
+			if (NULL == $responsableId || 0 == $responsableId) {
+				$loginResponsable = $VARS->post('nouveauLogin');
+				if (NULL == $loginResponsable || '' == $loginResponsable) {
+					$VARS->erreur('Pas de responsable pour les invités');
+					return;
+				}
+				// Créer un nouveau compte
+				$responsableId = $this->_db->insert('users',
+					array('login' => $loginResponsable,
+							'password' => Visitor::$DEFAULT_PASSWORD, 'allowed_pages' => '1,2,3'));
+			}
+
+			$erreurs = array();
+			foreach ($keys as $i) {
+				$invite = Invite::ajouter(
+						array('nom' => $noms[$i], 'prenom' => $prenoms[$i],
+								'official_id' => $responsableId));
+				if (NULL === $invite) {
+					$erreurs[] = "{ $noms[$i] $prenoms[$i] à l'ajout }";
+					continue;
+				}
+
+				// ajout du statut enfant ou non
+				if (isset($statutEnfants[$i])) {
+					$this->_db->insert('mm_user_categorie',
+						array('user_id' => $invite->id,
+								'categorie_id' => Categories::id('enfant')));
+				}
+
+				// Ajout d'un invité accompagnant
+				if ('' != $plusUnPrenoms[$i] && '' != $plusUnNoms[$i]) {
+					$accompagnant = Invite::ajouter(
+						array('nom' => $plusUnNoms[$i], 'prenom' => $plusUnPrenoms[$i],
+								'official_id' => $responsableId, 'plus_un' => $invite->id));
+					if (NULL === $accompagnant) {
+						$erreurs[] = "{ $plusUnNoms[$i] $plusUnPrenoms[$i] à l'ajout du plus un }";
+					}
+				}
+			}
+
+			if (!empty($erreurs)) {
+				$VARS->erreur('Enregistrements impossibles pour ' . implode(', ', $erreurs));
+			}
+		} else {
+			$VARS->erreur('Nombre incompatible entre les noms et prénoms.');
+		}
+	}
 	public function editionView() {
 		global $VARS;
 
