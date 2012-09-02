@@ -130,7 +130,7 @@ class Liste {
 			$participant .= "<div class='plusUn'><h3>Accompagné de :</h3>";
 			$participant .= "<div class='input'>" . $participantForm->input('plusUnNom', 'Nom') . '</div>';
 			$participant .= "<div class='input'>" . $participantForm->input('plusUnPrenom', 'Prenom'). '</div>';
-			$participant .= '</div>';
+			$participant .= '</div></div>';
 
 			$participants .= $participant;
 		}
