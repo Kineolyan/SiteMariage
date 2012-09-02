@@ -28,7 +28,13 @@ $(function() {
 		var container = getContainer($(this));
 		
 		var part = $(participantHtml.replace(/\[\d*\]/g, '['+ (participantId++) +']'));
+		
+		// Fermer le panel plusUn
+		part.find('div.plusUn').hide();
+		
+		// Ajouter les boutons
 		container.after(ajouterBoutons(part));
+		
 		++indiceParticipant;
 	}
 	
@@ -37,7 +43,7 @@ $(function() {
 		
 		var duration = 300;
 		container.find('div.otherParams').slideToggle(duration);
-		container.find('div.plusUn').delay(duration).slideToggle(duration);
+		container.find('div.plusUn').slideToggle(duration);
 	}
 	
 	
