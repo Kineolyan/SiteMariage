@@ -1,6 +1,7 @@
 <?php
 include_once 'util/helpers/pager.class.php';
 ?>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
