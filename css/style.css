@@ -2,6 +2,10 @@
 
 /* -- General elements -- */
 
+body {
+	margin-bottom: 20px;
+}
+
 input {
 	height: 28px;
 }
