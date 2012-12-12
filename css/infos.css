@@ -1,0 +1,26 @@
+#infos .nav {
+	margin-bottom: 0px;
+}
+
+#infos .tab-content {
+	padding: 18px 10px 15px;
+	border-bottom: 1px solid #DDDDDD;
+	border-left: 1px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-moz-border-bottom-right-radius: 5px;
+}
+
+#mapsContainer {
+	margin: auto;
+	width: 80%;
+}
+
+#switchMaps {
+	float: right;
+	z-index: 10;
+}
