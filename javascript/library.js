@@ -1,16 +1,44 @@
 var library  = {
-	parseJSON: function(data) {
+	parseJSONArray: function(data) {
+		console.log("parseJSONArray " + data);
+		if ('[]' == data) {
+			return [];
+		}
+
+		var items = data.substr(1, data.length - 2).split(/,/);
+		console.log(">> " + items);
+		for (var i in items) {
+			items[i] = library.parseJSON(items[i]);
+		}
+
+		return items;
+	},
+
+	parseJSONObject: function(data) {
+		console.log("parseJSONObject " + data);
 		var json = {};
 		if ('{}' == data) {
 			return json;
 		}
-		
-		var items = data.split(/,/);
+
+		var items = data.substr(1, data.length - 2).split(/,/);
+		console.log(">> " + items);
 		for (var i in items) {
-			var matches = /"([^"]+)" *: *"([^"]*)"/.exec(items[i]);
-			json[matches[1]] = matches[2];
+			var matches = /"([^"]+)" *: *"([^"]*)*/.exec(items[i]);
+			json[matches[1]] = library.parseJSON(matches[2]);
 		}
+
 		return json;
+	},
+
+	parseJSON: function(data) {
+		if ("{" == data[0]) {
+			return library.parseJSONObject(data);
+		} else if ("[" == data[0]) {
+			return library.parseJSONArray(data);
+		} else {
+			return data;
+		}
 	},
 	
 	Filtre: function (container, elements) {
