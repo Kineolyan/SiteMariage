@@ -20,4 +20,24 @@ $(function() {
 			$(this).popover((displayForm = !displayForm)? 'show': 'hide');
 		})
 		.prependTo($('#connectionContainer'));
+
+	// secure mailto items
+	$("a[rel='email']").each(function(){
+		// Modify the mailto: value
+		var mailAddress = $(this).attr('href');
+		if (!mailAddress) {
+			mailAddress = $(this).text();
+		}
+
+		mailAddress = mailAddress.replace("[at]","@");
+		mailAddress = mailAddress.replace("[point]",".");
+
+		// Auto-generate title tags for users
+		$(this).attr('title', "Email: " + mailAddress);
+		// onClick Event
+		$(this).click(function(){
+			window.location.href = "mailto:" + mailAddress;
+			return false;
+		});
+	});
 });
