@@ -50,6 +50,10 @@ class Pager {
 		}
 	}
 
+	public function pageId() {
+		return strtolower($this->m_page);
+	}
+
 	public function headerTitle($value = NULL) {
 		return $this->getSet($this->m_headerTitle, $value);
 	}
