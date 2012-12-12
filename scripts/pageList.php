@@ -5,10 +5,12 @@ $pagesList = array(
 		'Index' => 'Entrée',
 		'Accueil' => 'Accueil',
 		'Infos' => 'Informations',
+		'Contact' => 'Contact',
 		'Listing' => 'Liste des invités',
 		'Stats' => 'Statistiques',
 		'Facture' => 'Facture',
-		'Admin' => 'Administration'
+		'Admin' => 'Administration',
+		'Contact' => 'Contact'
 );
 
 $componentsList = array(
