@@ -13,6 +13,12 @@ include_once 'util/helpers/pager.class.php';
 <body id="<?php echo $this->pageId(); ?>">
 	<div class="container">
 
+		<div class="row">
+			<div id="<?php echo ($this->m_visitor->isLogged())? 'connected': 'connection' ?>Container" class="span3 offset9">
+				<?php echo $this->connexionForm(); ?>
+			</div>
+		</div>
+
 		<div class="navbar">
 		  <div class="navbar-inner">
 		    <div class="container">
