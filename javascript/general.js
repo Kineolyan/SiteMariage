@@ -1,7 +1,8 @@
 $(function() {
 	/* -- Remove the noJS class -- */
 	$('*').removeClass('noJS');
-	$('.hideIfNoJS').hide();
+	$('*').removeClass('hideIfNoJS');
+	$('.hideIfJS').hide();
 	
 	/* -- Connection form -- */
 	// Ajouter le popover

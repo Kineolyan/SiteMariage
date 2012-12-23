@@ -60,3 +60,7 @@ label.checkbox {
 #accessSubmitBtn {
 	margin-left: 10px;
 }
+
+.hideIfNoJS {
+	display: none;
+}

@@ -448,7 +448,7 @@ class Liste {
 		$formHtml.= Liste::createChangingList($envoyes, true, 'envoyes', 'Faire-parts envoyés', $form);
 		$formHtml.= $form->hidden('action', 'send');
 
-		return "<div class='hideIfNoJS alert-error'>Cette section nécessite Javascript pour fonctionner.</div>".$formHtml;
+		return "<div class='hideIfJS alert-error'>Cette section nécessite Javascript pour fonctionner.</div>".$formHtml;
 	}
 
 	public function envoyerInvitations() {
