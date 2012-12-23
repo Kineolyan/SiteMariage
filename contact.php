@@ -19,38 +19,38 @@ $page->addCss('css/contact.css')
 				<a rel="email">ceto[at]<br/>colombeetolivier[point]fr</a>
 			</p>
 		</div>
-		<div class="case cnavy">
+		<div class="case crouge">
 			<p>&nbsp;</p>
 		</div>
 	</div>
 	<div class="cRow">
-		<div class="case cjaune">
-			<p>
-				La famille Peyrusse, c'est à cette adresse :<br/>
-				<a rel="email">peyrusse[at]<br/>colombeetolivier[point]fr</a>
-			</p>
-		</div>
-		<div class="case">
-			<p>&nbsp;</p>
-		</div>
 		<div class="case corange">
 			<p>
 				Besoin de contacter les témoins :<br/>
 				<a rel="email">temoins[at]<br/>colombeetolivier[point]fr</a>
 			</p>
 		</div>
+		<div class="case">
+			<p>&nbsp;</p>
+		</div>
+		<div class="case cjaune">
+			<p>
+				La famille Peyrusse, c'est à cette adresse :<br/>
+				<a rel="email">peyrusse[at]<br/>colombeetolivier[point]fr</a>
+			</p>
+		</div>
 	</div>
 	<div class="cRow">
-		<div class="case cverte">
-			<p>
-				Pour les Ribéreau-Gayon, c'est par là :<br/>
-				<a rel="email">ribereau[at]<br/>colombeetolivier[point]fr</a></p>
+		<div class="case cnavy">
+			<p>&nbsp;</p>
 		</div>
 		<div class="case cviolet">
 			<p>&nbsp;</p>
 		</div>
-		<div class="case crouge">
-			<p>&nbsp;</p>
+		<div class="case cverte">
+			<p>
+				Pour les Ribéreau-Gayon, c'est par là :<br/>
+				<a rel="email">ribereau[at]<br/>colombeetolivier[point]fr</a></p>
 		</div>
 	</div>
 </div>
