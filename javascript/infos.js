@@ -14,9 +14,9 @@ $(function() {
 		.attr('src', maps.generateUrl(initializeMap))
 		.appendTo('body');
 
-	var mapsImageVisible = true;
+	/* var mapsImageVisible = true;
 	$('#switchMaps').click(function() {
 		mapsImageVisible = !mapsImageVisible;
 		$('#mapsImage').css('visibility', mapsImageVisible ? 'visible' : 'hidden');
-	});
+	}); */
 });

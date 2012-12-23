@@ -4,7 +4,9 @@
 </p>
 
 <div id="mapsContainer">
-	<div id="switchMaps" class="btn btn-info"><i class="icon-retweet"></i></div>
+	<div id="switchMaps" class="btn btn-info hideIfNoJs">
+		<!-- <i class="icon-retweet"></i> -->
+	</div>
 	<div id="mapsImage">
 		<img src="data/plan.jpg" alt="Plan schématique de la destination" title="Plan schématique de la destination"/>
 	</div>

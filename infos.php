@@ -11,11 +11,11 @@ $page->addCss("css/infos.css");
 ?>
 
 <div id="pageInfos">
-  <p>Les trucs importants à savoir :
+<!--   <p>Les trucs importants à savoir :
     <ul>
       <li>Il y aura un transport organisé vous ramener Mantes-la-Jolie, gare ou hôtel.</li>
     </ul>
-  </p>
+  </p> -->
 
   <div class="tabbable">
     <ul class="nav nav-tabs">
