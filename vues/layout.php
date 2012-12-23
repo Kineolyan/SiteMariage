@@ -13,34 +13,28 @@ include_once 'util/helpers/pager.class.php';
 <body id="<?php echo $this->pageId(); ?>">
 	<div class="container">
 
-	<div class="row">
-		<div id="<?php echo ($this->m_visitor->isLogged())? 'connected': 'connection' ?>Container"
-			class="span3 offset9">
-			<?php echo $this->connexionForm(); ?>
+		<div class="navbar">
+		  <div class="navbar-inner">
+		    <div class="container">
+					<?php echo $this->getNavigation(); ?>
+				</div>
+		  </div>
 		</div>
-	</div>
 
-	<div class="navbar">
-	  <div class="navbar-inner">
-	    <div class="container">
-	<?php echo $this->getNavigation(); ?>
-	</div>
-	  </div>
-	</div>
+		<?php if ('' != $this->pageTitle()) { ?>
+		<div class="row">
+			<h1><?php echo $this->pageTitle(); ?></h1>
+		</div>
+		<?php } ?>
+		
+		<div id='content' class="row">
+			<?php echo $this->content(); ?>
+		</div>
 
-	<?php if ('' != $this->pageTitle()) { ?>
-	<div class="row">
-		<h1><?php echo $this->pageTitle(); ?></h1>
-	</div>
-	<?php } ?>
-	
-	<div id='content' class="row">
-		<?php echo $this->content(); ?>
-	</div>
+		<?php foreach ($this->js() as $script) {
+			echo "<script type='text/javascript' src='$script'></script>";
+		} ?>
 
-	<?php foreach ($this->js() as $script) {
-		echo "<script type='text/javascript' src='$script'></script>";
-	} ?>
 	</div>
 </body>
 </html>
