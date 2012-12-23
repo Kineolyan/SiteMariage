@@ -13,6 +13,8 @@ include_once 'util/models/categories.class.php';
 
 session_start();
 
+set_exception_handler(array('Pager', 'handleException'));
+
 // Creation de la base de données
 if (isset($_GET['clear']) && 'session'==$_GET['clear']) {
 	$DB = creerDb();

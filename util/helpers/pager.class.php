@@ -9,6 +9,8 @@ class Pager {
 	private $m_content;
 	private $m_css;
 	private $m_js;
+	private $m_capture;
+	private $m_authentificate;
 
 	static private $includePath = 'include/';
 	static public $baseUrl = 'mariage/';
@@ -20,7 +22,7 @@ class Pager {
 	 * @param String $page est le nom de la page
 	 * @param boolean $capture indique s'il faut capturer toute sortie
 	 */
-	public function __construct($page, $capture = true) {
+	public function __construct($page, $capture = true, $useAuthentification = true) {
 		global $VISITOR;
 
 		$this->m_visitor = $VISITOR;
@@ -34,9 +36,14 @@ class Pager {
 		$this->m_js = array('javascript/jquery-1.7.2.min.js',
 				'bootstrap/js/bootstrap.min.js', 'javascript/library.js',
 				'javascript/general.js');
+		$this->m_capture = $capture;
+		$this->m_authentificate = $useAuthentification;
 
-		$this->m_visitor->manageConnection();
-		if ($capture) {
+		if ($this->m_authentificate) {
+			$this->m_visitor->manageConnection();
+		}
+
+		if ($this->m_capture) {
 			ob_start();
 		}
 	}
@@ -142,8 +149,10 @@ class Pager {
 	// Génération de la page complète
 
 	public function render($layout = NULL) {
-		$this->m_content = ob_get_contents();
-		ob_end_clean();
+		if ($this->m_capture) {
+			$this->m_content = ob_get_contents();
+			ob_end_clean();
+		}
 
 		// Ajouter le menu latéral s'il y a des éléments
 		// 		if (NULL !== $this->m_sousMenu && 0 < count($this->m_sousMenu)) {
@@ -165,7 +174,7 @@ class Pager {
 		// 				.'<div class="span10">'.$this->m_content.'</div>';
 		// 		}
 
-		if (!$this->m_visitor->hasAccess($this->m_page)) {
+		if ($this->m_authentificate && !$this->m_visitor->hasAccess($this->m_page)) {
 			$this->renderDenied();
 		}
 
@@ -235,5 +244,30 @@ class Pager {
 
 	static public function redirect($page) {
 		header('Location:' . self::url($page));
+	}
+
+	static public function handleException() {
+		ob_end_clean();
+		
+		try {
+			$page = new Pager('Erreur', false, false);
+			$page->headerTitle('Erreur');
+			$page->pageTitle('Erreur sur la page');
+			$page->content(<<<EOF
+<p>
+	Un problème technique a eu lieu au chargement de cette page.<br/>
+	Nous sommes pour l'instant dans l'impossibilité d'accéder à votre demande.<br/>
+	Nous sommes actuellement en train de trouver une solution et vous prions de bien vouloir patienter.
+</p>
+<p>
+	Merci pour votre compréhension.
+</p>
+EOF
+);
+
+			$page->render();
+		} catch (Exception $e) {
+			include "../vues/erreur.html";
+		}
 	}
 }
