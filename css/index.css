@@ -2,8 +2,12 @@
 	text-align: center;
 }
 
-#faire_part {
+body {
 	margin-top: 10px;
+}
+
+#faire_part {
+	margin-top: 30px;
 }
 
 #bouton {
@@ -23,9 +27,10 @@
 	border-radius:	20px;
 	color: white;
 	font-size: 32px;
+	font-variant: small-caps;
 	line-height: 50px;
 	margin-top: 30px;
-	padding: 15px;
+	padding: 20px 50px;
 }
 
 #bouton:hover, 
