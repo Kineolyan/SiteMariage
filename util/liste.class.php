@@ -34,6 +34,11 @@ class Liste {
 			Pager::redirect('listing.php?view=categories');
 			break;
 
+		case 'send':
+			$this->envoyerInvitations();
+			Pager::redirect('listing.php?view=faire-part');
+			break;
+
 		case '':
 		// Nothing to do
 			break;
@@ -420,17 +425,64 @@ class Liste {
 		}
 	}
 
+	/* -- Envoi de faire-parts -- */
+
+	public function sendingView() {
+		$aEnvoyer = array();
+		$envoyes = array();
+
+		$this->_db->select('invites', 'id, nom, prenom, invitation_send', '', array('orderBy', 'nom, prenom'));
+		while ($inviteData = $this->_db->fetch()) {
+			if (0 != $inviteData['invitation_send']) {
+				$envoyes[$inviteData['id']] = "$inviteData[nom] $inviteData[prenom]";
+			} else {
+				$aEnvoyer[$inviteData['id']] = "$inviteData[nom] $inviteData[prenom]";
+			}
+		}
+
+		$form = new Form('SendingForm');
+		$formHtml = $form->create('', 'sendingForm');
+		$formHtml.= $form->submit('','Envoyer les faire-parts', 
+			array('id' => "sendingButton", 'class' => 'btn btn-success'));
+		$formHtml.= Liste::createChangingList($aEnvoyer, false, 'aEnvoyer', 'Faire-parts à envoyer', $form);
+		$formHtml.= Liste::createChangingList($envoyes, true, 'envoyes', 'Faire-parts envoyés', $form);
+		$formHtml.= $form->hidden('action', 'send');
+
+		return "<div class='hideIfNoJS alert-error'>Cette section nécessite Javascript pour fonctionner.</div>".$formHtml;
+	}
+
+	public function envoyerInvitations() {
+		global $VARS;
+
+		foreach ($VARS->post('send') as $id => $statut) {
+			if ('0'===$statut || 0 != intval($statut)) {
+				$invite = Invite::getById(intval($id));
+				$invite->envoyerInvitation(0 != intval($statut));
+			}
+		}
+	}
+
 	/* -- Autres -- */
 
 	public function changerStatut() {
 		global $VARS;
 
-		$this->_db
-				->update('invites', array('statut', $VARS->get('statut', 'int')),
-						'id=' . $VARS->get('idInvite', 'int'));
+		$this->_db->update('invites', array('statut', $VARS->get('statut', 'int')),
+			'id=' . $VARS->get('idInvite', 'int'));
 	}
 
 	public function deletionView() {}
+
+	private static function createChangingList(&$data, $value, $idTag, $title, &$form) {
+		$content = '';
+		$class = "to" . ($value? 'Left': 'Right');
+		foreach ($data as $id => $nom) {
+			$content.= "<p class='movingEntry $class'><i class='moving-arrow'>arrow</i>$nom"
+				.$form->hidden("send[$id]", $value? "1": "0")."</p>";
+		}
+
+		return "<div id='$idTag' class='movingList'><h3>$title</h3>$content</div>";
+	}
 
 	// Fonctions élémentaires
 }

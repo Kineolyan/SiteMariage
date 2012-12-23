@@ -11,7 +11,7 @@ input {
 }
 
 .cleaner {
-	clean: both;
+	clear: both;
 }
 
 label.checkbox {
@@ -24,104 +24,23 @@ label.checkbox {
 	margin-top: 10px;
 }
 
-/* -- Listing -- */
+/* -- Redefined styles -- */
 
-th.header {
-	background-image: url(../data/bg-min.png);
-	background-repeat: no-repeat;
-	padding-left: 30px;
-	padding-top: 8px;
-	height: auto;
-}
-
-th.headerSortUp {
-	background-image: url(../data/asc-min.png);
-}
-
-th.headerSortDown {
-	background-image: url(../data/desc-min.png);
-}
-
-#searchBar {
-	height: 35px;
-	text-align: right;
-}
-
-#searchBar input {
+.container .nav {
 	margin-bottom: 0px;
-	vertical-align: middke;
 }
 
-#connectionForm.noJS input {
-	width: 125px;
-}
-
-#connectionForm.noJS label {
-	display: inline-block;
-}
-
-ul.dropdown-menu li {
-	margin-left: 10px;
-}
-
-.actions {
-	float: left;
-	padding: 5px;
-	width: 50px;
-}
-
-.icon-avecPlusUn {
-	background-image: url(../data/sprites.png);
-	background-position: 0px 0px;
-	width: 19px
-}
-
-.icon-plusUn {
-	background-image: url(../data/sprites.png);
-	background-position: -19px 0px;
-	width: 19px
-}
-
-th.check, td.check {
-	text-align: center;
-}
-
-/* -- Enregistrement -- */
-
-.participant {
-	background: #f0f0f0;
-	border-radius: 10px;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	padding: 10px 15px 10px;
-	width: 550px;
-}
-
-.participant .plusUn { 
-	clear: both;
-}
-
-.participant .input {
-	float: left;
-	margin-left: 30px;
-}
-
-.participant .plus_moins {
-	float: right;
-	margin: 10px 15px 0 25px;
-	line-height: 25px;
-}
-
-.participant .plus,
-.participant .moins {
-	display: block;
-	margin-bottom: 5px;
-}
-
-.participant .otherParams {
-	clear: both;
-	margin-bottom: 10px;
-	margin-left: 30px;
+.container .tab-content {
+	padding: 18px 10px 15px;
+	border-bottom: 1px solid #DDDDDD;
+	border-left: 1px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-moz-border-bottom-right-radius: 5px;
 }
 
 /* -- Stats -- */

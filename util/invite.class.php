@@ -213,8 +213,16 @@ class Invite {
 
 			$editionBtn = "<a href='listing.php?view=edition&id={$this->_data['id']}'><i class='icon-pencil'></i></a>";
 		}
+
+		$statutInvitation = "";
+		if (0 != $this->_data['invitation_send']) {
+			$statutInvitation = "<i class='icon-faire-part'></i>";
+		}
+		
 		$statut.= "</button></div>";
-		$content.= "<td class='btn-toolbar'><div class='actions btn-group'>$editionBtn $accompagne</div> $statut</td>";
+		$content.= "<td class='btn-toolbar'>"
+			."<div class='actions btn-group'>$editionBtn $accompagne</div>"
+			." $statut $statutInvitation</td>";
 
 		return '<tr>'.$content.'</tr>';
 	}
@@ -252,6 +260,28 @@ class Invite {
 		}
 		else {
 			return Invite::getStatus($this->_data['statut']);
+		}
+
+	}
+
+	public function envoyerInvitation($envoyer) {
+		$dbEnvoi = 'invitation_send';
+
+		if ($this->_editable) {
+			$statutEnvoi = $envoyer? 1: 0;
+
+			if ($statutEnvoi != $this->_data[$dbEnvoi]) {
+				$this->_db->update('invites',
+					array($dbEnvoi => $statutEnvoi),
+					'id=' . $this->_data['id']);
+
+				$this->_data[$dbEnvoi] = $statutEnvoi;
+			}
+
+			return $statutEnvoi;
+		}
+		else {
+			return Invite::getStatus($this->_data[$dbEnvoi]);
 		}
 
 	}

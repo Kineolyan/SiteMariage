@@ -5,6 +5,7 @@ include_once "environment.php";
 $page = new Pager('Listing');
 $page->headerTitle('Liste des invités');
 $page->pageTitle('Liste des invités');
+$page->addCss('css/liste.css');
 
 if ($VARS->isAjaxRequest()) {
 	$idInvite = $VARS->ajax('id', 'int');
@@ -50,6 +51,7 @@ else {
 		<li><a href='listing.php'>Liste complète</a></li>
 		<?php } ?>
 		<li><a href='listing.php?view=categories'>Catégories</a></li>
+		<li><a href='listing.php?view=faire-part'>Faire-parts</a></li>
 	</ul>
 </div>
 
@@ -81,6 +83,11 @@ else {
 	case 'categories':
 		echo $searchBarHtml . $liste->categoriesView();
 		$page->addJs('javascript/listing.categories.js');
+		break;
+
+	case 'faire-part':
+		echo $liste->sendingView();
+		$page->addJs('javascript/listing.sending.js');
 		break;
 
 	case 'liste':
