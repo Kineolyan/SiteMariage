@@ -5,3 +5,4 @@ save_bug/*
 .settings/*
 backups/
 scripts/mysql.php
+data/RAW/*
