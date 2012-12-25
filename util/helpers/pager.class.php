@@ -106,12 +106,13 @@ class Pager {
 	public function getNavigation() {
 		require 'scripts/pageList.php';
 
-		$menu = '<ul class="nav">';
-		foreach ($pagesList as $page => $pageTitle) {
-			$pageName = $page;
-			$pageName[0] = strtolower($pageName[0]);
-			if ($this->m_visitor->hasAccess($page)) {
-				$menu .= "<li><a href='$pageName.php'>$pageTitle</a></li>";
+		$menu = '<span class="brand">C&amp;O</span><ul class="nav">';
+		foreach ($pagesList as $page) {
+			if ($this->m_visitor->hasAccess($page->file())) {
+				$class = $page->file() == $this->m_page ? 'active' : '';
+
+				$menu .= "<li><a href=\"" . $page->fileName() . "\" title=\"" . Utils::escapeDblQuote($page->title()) . "\" class='$class'>"
+					. $page->name() . "</a></li>";
 			}
 		}
 		$menu .= '</ul>';
