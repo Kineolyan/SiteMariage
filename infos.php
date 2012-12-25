@@ -22,6 +22,7 @@ $page->addCss("css/infos.css");
       <li class="active"><a href="#tab1" data-toggle="tab">Comment venir ?</a></li>
       <li><a href="#tab2" data-toggle="tab">Où dormir</a></li>
       <li><a href="#tab3" data-toggle="tab">Sur place</a></li>
+      <li><a href="#tab4" data-toggle="tab">Liste de mariage</a></li>
     </ul>
     <div class="tab-content">
       <div class="tab-pane active" id="tab1">
@@ -35,8 +36,13 @@ $page->addCss("css/infos.css");
       </div>
 
       <div class="tab-pane" id="tab3">
-      	<!-- Sur place -->
+        <!-- Sur place -->
         <?php include_once "vues/include/sur_place.php"; ?>
+      </div>
+
+      <div class="tab-pane" id="tab4">
+        <!-- Liste de mariage -->
+        <?php include_once "vues/include/liste_mariage.php"; ?>
       </div>
     </div>
   </div>
