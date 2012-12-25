@@ -10,6 +10,7 @@ include_once 'util/liste.class.php';
 include_once 'util/vars.class.php';
 include_once 'util/admin.class.php';
 include_once 'util/models/categories.class.php';
+include_once 'util/utils.class.php';
 
 session_start();
 

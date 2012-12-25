@@ -109,7 +109,10 @@ class Pager {
 		$menu = '<span class="brand">C&amp;O</span><ul class="nav">';
 		foreach ($pagesList as $page) {
 			if ($this->m_visitor->hasAccess($page->file())) {
-				$menu .= "<li><a href='{$page->fileName()}' title='{$page->title()}'>{$page->name()}</a></li>";
+				$class = $page->file() == $this->m_page ? 'active' : '';
+
+				$menu .= "<li><a href=\"" . $page->fileName() . "\" title=\"" . Utils::escapeDblQuote($page->title()) . "\" class='$class'>"
+					. $page->name() . "</a></li>";
 			}
 		}
 		$menu .= '</ul>';
