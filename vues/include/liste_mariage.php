@@ -4,3 +4,8 @@
 	En cas de difficulté, vous pourrez toujours trouver de l'aide auprès de nos familles (rendez-vous sur la page 
 	<?php echo HtmlHelper::link('Contacts', 'contact.php', array('title' => 'Page avec tous les adresses des contacts')) ?>).
 </p>
+
+<p>
+	La procédure sera bientôt décrite intégralement, photos à l'appui, pour vous simplifier au maximum le tout. Patience, ce sera bientôt
+	en ligne.
+</p>
