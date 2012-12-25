@@ -107,11 +107,9 @@ class Pager {
 		require 'scripts/pageList.php';
 
 		$menu = '<ul class="nav">';
-		foreach ($pagesList as $page => $pageTitle) {
-			$pageName = $page;
-			$pageName[0] = strtolower($pageName[0]);
-			if ($this->m_visitor->hasAccess($page)) {
-				$menu .= "<li><a href='$pageName.php'>$pageTitle</a></li>";
+		foreach ($pagesList as $page) {
+			if ($this->m_visitor->hasAccess($page->file())) {
+				$menu .= "<li><a href='{$page->fileName()}' title='{$page->title()}'>{$page->name()}</a></li>";
 			}
 		}
 		$menu .= '</ul>';
