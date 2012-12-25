@@ -24,11 +24,11 @@ class Admin {
 			case 'updatePassword':
 				$password1 = $VARS->post('password1', 'string');
 				$password2 = $VARS->post('password2', 'string');
-				$userId = $VARS->post('login', 'int');
-				if ($password1 == $password2 && 0 != $userId) {
+				$login = $VARS->post('login', 'string');
+				if ($password1 == $password2 && '' != $login) {
 					$DB->update('users',
 							array('password' => Visitor::cryptPassword($password1)),
-							"id=$userId");
+							"login='$login'");
 					$VARS->succes("Mot de passe mis à jour");
 				}
 				else {
