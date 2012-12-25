@@ -31,8 +31,8 @@ function registerItem($db, $page, $ajax) {
 function registerPages($db, $pages, $ajax) {
 	if ($ajax) {
 		$json = array();
-		foreach ($pages as $page => $nom) {
-			$jsonPage = registerItem($db, $page, true);
+		foreach ($pages as $page) {
+			$jsonPage = registerItem($db, $page->file(), true);
 			
 			if (NULL!=$jsonPage) {
 				$json[] = $jsonPage;
@@ -42,8 +42,8 @@ function registerPages($db, $pages, $ajax) {
 		return $json;
 	}
 	else {
-		foreach ($pages as $page => $nom) {
-			registerItem($db, $page, false);
+		foreach ($pages as $page) {
+			registerItem($db, $page->file(), false);
 		}
 	}
 }
