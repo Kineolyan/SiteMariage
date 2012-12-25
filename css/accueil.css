@@ -1,0 +1,8 @@
+#nous {
+	background-color: #FCFACA;
+	border: solid 1px black;
+	float: right;
+	padding: 4px;
+	-moz-transform: rotate(-10deg);
+	-webkit-transform: rotate(-10deg);
+}
