@@ -1,0 +1,7 @@
+.git/*
+save_bug/*
+.buildpath
+.project
+.settings/*
+backups/
+scripts/mysql.php
