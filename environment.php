@@ -11,6 +11,7 @@ include_once 'util/vars.class.php';
 include_once 'util/admin.class.php';
 include_once 'util/models/categories.class.php';
 include_once 'util/utils.class.php';
+include_once 'util/helpers/html.helper.php';
 
 session_start();
 
