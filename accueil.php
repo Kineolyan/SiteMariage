@@ -2,7 +2,7 @@
 
 include_once "environment.php";
 
-$page = new Pager('Index');
+$page = new Pager('Accueil');
 $page->headerTitle('Accueil');
 $page->pageTitle('Bonjour et bienvenue sur le site du mariage de Colombe & Olivier');
 ?>
