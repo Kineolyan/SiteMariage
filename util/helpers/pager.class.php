@@ -106,7 +106,7 @@ class Pager {
 	public function getNavigation() {
 		require 'scripts/pageList.php';
 
-		$menu = '<ul class="nav">';
+		$menu = '<span class="brand">C&amp;O</span><ul class="nav">';
 		foreach ($pagesList as $page) {
 			if ($this->m_visitor->hasAccess($page->file())) {
 				$menu .= "<li><a href='{$page->fileName()}' title='{$page->title()}'>{$page->name()}</a></li>";
