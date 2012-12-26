@@ -1,6 +1,6 @@
 <?php
 
-class HtmlHelper {
+class Html {
 	private static function getAttribute($nom, $attributs) {
 		if (is_array($nom)) {
 			foreach ($nom as $key) {
@@ -26,7 +26,7 @@ class HtmlHelper {
 		);
 	}
 
-	public static function link($lien, $href, $attributs) {
+	public static function link($lien, $href, $attributs = array()) {
 		return sprintf('<a href="%1$s" class="%4$s" id="%5$s" title="%3$s"/>%2$s</a>',
 			$href, $lien
 			, self::getAttribute('title', $attributs)

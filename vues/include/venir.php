@@ -8,7 +8,7 @@
 		<i class="icon-retweet"></i>
 	</div> -->
 	<div id="mapsImage">
-		<?php echo HtmlHelper::img("data/plan.jpg", array('title' => "Plan schématique de la destination")); ?>
+		<?php echo Html::img("data/plan.jpg", array('title' => "Plan schématique de la destination")); ?>
 	</div>
 	<div id="mapsMariage" style="width:100%; height:100%"></div>
 </div>

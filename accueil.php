@@ -15,7 +15,7 @@ $page->addCss('css/accueil.css');
 </p>
 
 <div>
-	<?php echo HtmlHelper::img("data/couple.png", array('title' => "Photo des futurs mariés à St-K", 'id'=> "nous")); ?>
+	<?php echo Html::img("data/couple.png", array('title' => "Photo des futurs mariés à St-K", 'id'=> "nous")); ?>
 </div>
 
 <p>
