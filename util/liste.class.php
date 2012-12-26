@@ -431,7 +431,7 @@ class Liste {
 		$aEnvoyer = array();
 		$envoyes = array();
 
-		$this->_db->select('invites', 'id, nom, prenom, invitation_send', '', array('orderBy', 'nom, prenom'));
+		$this->_db->select('invites', 'id, nom, prenom, invitation_send', '', array('orderBy' => 'nom, prenom'));
 		while ($inviteData = $this->_db->fetch()) {
 			if (0 != $inviteData['invitation_send']) {
 				$envoyes[$inviteData['id']] = "$inviteData[nom] $inviteData[prenom]";
