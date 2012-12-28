@@ -180,6 +180,19 @@ class Invite {
 	}
 
 	/**
+	 * Génère la ligne de header pour le tableau de invités
+	 *
+	 * @return string contenant le thead en HTML
+	 */
+	public static function renderLineHeader() {
+		$content = "<th>Nom</th>";
+		$content.= "<th>Prenom</th>";
+		$content.= "<th>Statut</th>";
+
+		return '<tr>'.$content.'</tr>';
+	}
+
+	/**
 	 * Génère le contenu d'une ligne dans le tableau pour un utilisateur
 	 *
 	 * @return string contenant la ligne en HTML
@@ -234,14 +247,6 @@ class Invite {
 	 */
 	public function estEditable() {
 		return $this->_editable;
-	}
-
-	public static function renderLineHeader() {
-		$content = "<th>Nom</th>";
-		$content.= "<th>Prenom</th>";
-		$content.= "<th>Statut</th>";
-
-		return '<tr>'.$content.'</tr>';
 	}
 
 	public function changerStatut($nouveauStatut) {
