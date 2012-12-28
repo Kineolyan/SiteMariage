@@ -44,6 +44,11 @@ ul.dropdown-menu li {
 	width: 50px;
 }
 
+.statut button {
+	width: 85px;
+	margin-right: 10px;
+}
+
 .icon-avecPlusUn {
 	background-image: url(../data/sprites.png);
 	background-position: 0px 0px;
@@ -166,11 +171,19 @@ th.check, td.check {
 	float: right;
 }
 
+.movingEntry .moving-arrow {
+	background-image: url(../data/fleches.png);
+	height: 20px;
+	width: 35px;
+}
+
 .movingEntry.toLeft .moving-arrow {
+	background-position: 0px -15px;
 	float: left;
 }
 
 .movingEntry.toRight .moving-arrow {
+	background-position: -15px -15px;
 	float: right;
 }
 

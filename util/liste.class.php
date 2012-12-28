@@ -477,7 +477,7 @@ class Liste {
 		$content = '';
 		$class = "to" . ($value? 'Left': 'Right');
 		foreach ($data as $id => $nom) {
-			$content.= "<p class='movingEntry $class'><i class='moving-arrow'>arrow</i>$nom"
+			$content.= "<p class='movingEntry $class'><i class='moving-arrow'></i>$nom"
 				.$form->hidden("send[$id]", $value? "1": "0")."</p>";
 		}
 
