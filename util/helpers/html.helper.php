@@ -34,4 +34,9 @@ class Html {
 			, self::getAttribute('id', $attributs)
 		);
 	}
+
+	public static function tip($text, $tip, $placement = 'bottom') {
+		echo sprintf('<a href="#" rel="tooltip" title="%2$s" data-placement="%3$s">%1$s</a>',
+			$text, $tip, $placement);
+	}
 }
