@@ -1,7 +1,14 @@
 #nous {
+	float: right;
+	height: 362px;
+	padding-top: 32px;
+	padding-left: 24px;
+	width: 436px;
+}
+
+#nous img {
 	background-color: #FCFACA;
 	border: solid 1px black;
-	float: right;
 	padding: 4px;
 	-moz-transform: rotate(-10deg);
 	-webkit-transform: rotate(-10deg);

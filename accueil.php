@@ -14,8 +14,8 @@ $page->addCss('css/accueil.css');
 	où vous pourrez dormir, ...
 </p>
 
-<div>
-	<?php echo Html::img("data/couple.png", array('title' => "Photo des futurs mariés à St-K", 'id'=> "nous")); ?>
+<div id="nous">
+	<?php echo Html::img("data/couple.png", array('title' => "Photo des futurs mariés à St-K")); ?>
 </div>
 
 <p>

@@ -14,6 +14,10 @@ class Utils {
 	public static function escapeDblQuote($subject) {
 		return self::escape($subject, '"');
 	}
+
+	public static function telephone($telephone) {
+		return $telephone;
+	}
 }
 
 ?>

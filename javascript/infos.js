@@ -19,4 +19,6 @@ $(function() {
 		mapsImageVisible = !mapsImageVisible;
 		$('#mapsImage').css('visibility', mapsImageVisible ? 'visible' : 'hidden');
 	}); */
+
+	$('*[rel="tooltip"]').tooltip();
 });
