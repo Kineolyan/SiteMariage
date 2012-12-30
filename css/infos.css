@@ -1,3 +1,5 @@
+/* -- Comment venir -- */
+
 #mapsContainer {
 	margin: auto;
 	width: 80%;
@@ -11,4 +13,18 @@
 #mapsImage {
 	margin: auto;
 	text-align: center;
+}
+
+/* -- Logement -- */
+
+.hotel {
+	float: left;
+	width: 49%;
+}
+
+.hotel .ditance,
+.hotel .adresse,
+.hotel .contact,
+.hotel .prix {
+	display: block;
 }
