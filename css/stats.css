@@ -1,0 +1,12 @@
+.totalCategorie {
+	font-weight: bold;
+}
+
+.totalPresence {
+	background-color: #E5F8FF;
+	font-weight: bold;
+}
+
+.totalPresence:hover {
+	background-color: #CAEDFA;
+}
