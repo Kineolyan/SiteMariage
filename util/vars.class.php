@@ -54,7 +54,7 @@ class Variables {
 			return Variables::secureVars($value);
 		}
 		else {
-			return htmlspecialchars($value);
+			return htmlspecialchars($value, ENT_QUOTES);
 		}
 	}
 
