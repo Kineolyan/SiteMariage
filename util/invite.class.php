@@ -15,7 +15,7 @@ class Invite {
 		$this->_db = $DB;
 		$this->_visitor = $VISITOR;
 		if (is_int($id)) {
-			$this->_data = $this->_db->get('invites', '*', "id=".intval($id));
+			$this->_data = $this->_db->get('invites', '*', "id=".$id);
 		}
 		else if (is_array($data)) {
 			$this->_data = $data;
