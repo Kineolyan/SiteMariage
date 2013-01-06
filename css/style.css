@@ -63,7 +63,7 @@ label.checkbox {
 
 /* -- JS objects -- */
 
-.searchForm .loupe, .searchForm .reset {
+.loupe, .searchForm .reset {
 	margin-left: 5px;
 }
 
