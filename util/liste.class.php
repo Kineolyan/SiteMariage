@@ -67,7 +67,7 @@ class Liste {
 			break;
 
 		default:
-			var_dump('action non gérée : ' . $VARS->post('action'));
+			$LOGGER->warn('action non gérée : ' . $VARS->get('action'));
 			break;
 		}
 	}
