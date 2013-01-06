@@ -71,12 +71,15 @@ class Visitor {
 	}
 
 	private function login($login, $password) {
+		global $LOGGER;
+
 		$cryptedPasswd = self::cryptPassword($password);
 
 		if (0<$this->m_db->count('users', '*', "login='$login' AND password='$cryptedPasswd'")) {
 			$this->getAllowedPages($login);
 			$this->m_nom = $login;
 			$this->m_isLogged = true;
+			$LOGGER->log(sprintf("connection de %s.", $this->m_nom));
 
 			$visitor = $this->m_db->get('users', 'admin, id',  "login='$login'");
 			$this->m_isAdmin = '1'==$visitor['admin'];
@@ -84,12 +87,18 @@ class Visitor {
 
 			$this->m_db->update('users', array('last_connection' => 'NOW()'),
 					"login='$login'");
+		} else {
+			$LOGGER->warn("$login a tenté de se connecter sans succés.");
 		}
 
 		return $this->m_isLogged;
 	}
 
 	private function logout() {
+		global $LOGGER;
+
+		$LOGGER->log(sprintf("déconnexion de %s.", $this->m_nom));
+
 		$this->getAllowedPages('anonymous');
 		$this->m_nom = '';
 		$this->m_id = 0;

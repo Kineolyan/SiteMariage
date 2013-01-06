@@ -6,10 +6,6 @@ body {
 	margin-bottom: 20px;
 }
 
-input {
-	height: 28px;
-}
-
 .cleaner {
 	clear: both;
 }
@@ -63,4 +59,24 @@ label.checkbox {
 
 .hideIfNoJS {
 	display: none;
+}
+
+/* -- JS objects -- */
+
+.searchForm .loupe, .searchForm .reset {
+	margin-left: 5px;
+}
+
+.selectorForm {
+	background: white;
+	border: solid 2px black;
+	margin-top: 10px;
+	padding: 5px 10px;
+	position: absolute;
+	width: 250px;
+}
+
+.selectorForm .selections {
+	list-style: none;
+	margin-top: 10px;
 }

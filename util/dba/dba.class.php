@@ -66,11 +66,11 @@ abstract class Dba {
 		foreach ($elements as $field => $value) {
 			if (!$first) {
 				$tableFields .= ',' . $field;
-				$tableValues .= ",'$value'";
+				$tableValues .= ",{$this->formatValue($value)}";
 			} else {
 				$first = false;
 				$tableFields .= $field;
-				$tableValues .= "'$value'";
+				$tableValues .= $this->formatValue($value);
 			}
 		}
 

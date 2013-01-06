@@ -247,8 +247,12 @@ class Pager {
 		header('Location:' . self::url($page));
 	}
 
-	static public function handleException() {
+	static public function handleException($exception) {
+		global $LOGGER;
+
 		ob_end_clean();
+
+		$LOGGER->log(sprintf('Exception générale : %s', $exception->getMessage()));
 		
 		try {
 			$page = new Pager('Erreur', false, false);

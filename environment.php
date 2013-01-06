@@ -12,6 +12,7 @@ include_once 'util/admin.class.php';
 include_once 'util/models/categories.class.php';
 include_once 'util/utils.class.php';
 include_once 'util/helpers/html.helper.php';
+include_once 'util/logger.class.php';
 
 session_start();
 
@@ -44,5 +45,6 @@ else {
 
 Categories::init($DB);
 $VARS = new Variables();
+$LOGGER = new Logger();
 
 ?>

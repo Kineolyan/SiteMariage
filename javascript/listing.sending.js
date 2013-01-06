@@ -31,4 +31,6 @@ function recuperer(element) {
 
 $(function() {
 	$('.movingEntry').click(moveEntry);
+
+	new library.Filtre($('#searchBar'), $('.movingEntry'));
 })

@@ -35,7 +35,7 @@ $pagesList = array(
 );
 
 $componentsList = array(
-		'RegistrationForm', 'EditionForm'
+		'RegistrationForm', 'EditionForm', 'MySQL'
 );
 
 ?>

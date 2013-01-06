@@ -18,12 +18,18 @@ th.headerSortDown {
 
 #searchBar {
 	height: 35px;
-	text-align: right;
+	float: right;
 }
 
 #searchBar input {
 	margin-bottom: 0px;
-	vertical-align: middke;
+	vertical-align: middle;
+}
+
+#selectBar {
+	height: 35px;
+	float: left;
+	margin-left: 30px;
 }
 
 #connectionForm.noJS input {
@@ -40,13 +46,20 @@ ul.dropdown-menu li {
 
 .actions {
 	float: left;
-	padding: 5px;
-	width: 50px;
+	padding: 5px 10px 5px 5px
 }
 
 .statut button {
 	width: 85px;
 	margin-right: 10px;
+}
+
+.statut button .caret {
+	float: right;
+}
+
+.icon-void {
+	width: 19px
 }
 
 .icon-avecPlusUn {
