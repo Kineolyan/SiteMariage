@@ -81,8 +81,28 @@ var library  = {
 	
 	ajax: function(params) {
 		var actions = {
-				url: params.url,
-				data: params.data };
+			url: params.url,
+			data: params.data,
+			error: function() { console.log('error in ajax'); },
+			success: params.success
+		};
+		// Ajout du param pour identifier la requête comme ajax
+		actions.data['__ajax__'] = 1;
+
+		if (params.debug) {
+			console.log(actions);
+		}
+		
+		// Envoi de la requête
+		jQuery.ajax(actions);
+	},
+	
+	json: function(params) {
+		var actions = {
+			url: params.url,
+			data: params.data,
+			error: function() { console.log('error in ajax'); }
+		};
 		// Ajout du param pour identifier la requête comme ajax
 		actions.data['__ajax__'] = 1;
 		

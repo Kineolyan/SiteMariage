@@ -1,5 +1,5 @@
 function refreshPages() {
-	library.ajax({
+	library.json({
 		url: 'scripts/pagesRegistration.php', 
 		data: {}, 
 		success: function(pageList) {
@@ -25,7 +25,7 @@ $(function() {
 	$('#categoriesForm').submit(function() {
 		var form = this;
 		
-		library.ajax({
+		library.json({
 			url: 'admin.php',
 			data: { categorie: form.categorie.value, action: 'ajouterCategorie' },
 			success: function(data) { listerNouvelleCategorie(data.success); }
