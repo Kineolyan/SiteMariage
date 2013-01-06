@@ -92,6 +92,7 @@ class Invite {
 	}
 
 	static public function ajouter($data) {
+		global $DB, $LOGGER;
 		global $DB;
 
 		if (Invite::verifierDonnees($data)) {
@@ -101,6 +102,7 @@ class Invite {
 			if (0 == $DB->count('invites', 'id',
 					'nom="'.Variables::sanitize($data['nom']).'" AND prenom="'.Variables::sanitize($data['prenom']).'"')) {
 				$idAjout = $DB->insert('invites', $data);
+				$LOGGER->log(sprintf("Ajout d'un invité %s %s", Variables::sanitize($data['nom']), Variables::sanitize($data['prenom'])));
 
 				return self::getById($idAjout);
 			}
@@ -110,11 +112,14 @@ class Invite {
 	}
 
 	public function mettreAJour($data) {
+		global $LOGGER;
+
 		if (Invite::verifierDonnees($data)) {
 			// Ajout du timestamp
 			$data['last_modification'] =  'NOW()';
 
 			$this->_db->update('invites', $data, 'id='.$this->_data['id']);
+			$LOGGER->log(sprintf("Mise à jour de %s", $this->_id));
 			return true;
 		}
 		return false;

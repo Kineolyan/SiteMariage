@@ -16,7 +16,7 @@ class Liste {
 	// Méthodes de gestion des invités
 
 	public function gererSoumission() {
-		global $VARS;
+		global $VARS, $LOGGER;
 
 		switch ($VARS->post('action')) {
 		case 'registration':
@@ -40,7 +40,12 @@ class Liste {
 			break;
 
 		case '':
-		// Nothing to do
+			// Nothing to do
+			break;
+
+		default:
+			$LOGGER->warn('action non gérée : ' . $VARS->get('action'));
+			break;
 			break;
 
 		default:
