@@ -49,6 +49,10 @@ ul.dropdown-menu li {
 	margin-right: 10px;
 }
 
+.icon-void {
+	width: 19px
+}
+
 .icon-avecPlusUn {
 	background-image: url(../data/sprites.png);
 	background-position: 0px 0px;

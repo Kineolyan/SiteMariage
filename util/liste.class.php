@@ -29,6 +29,10 @@ class Liste {
 			Pager::redirect('listing.php?view=liste');
 			break;
 
+		case 'delete':
+			// Nothing to do
+			break;
+
 		case 'categorize':
 			$this->updateCategories();
 			Pager::redirect('listing.php?view=categories');
@@ -46,6 +50,20 @@ class Liste {
 		default:
 			$LOGGER->warn('action non gérée : ' . $VARS->get('action'));
 			break;
+		}
+
+		switch ($VARS->get('action')) {
+		case 'delete':
+			$this->deleteGuest();
+			Pager::redirect('listing.php?view='.$VARS->get('view'));
+			break;
+
+		case 'registration':
+		case 'edition':
+		case 'categorize':
+		case 'send':
+		case '':
+			// Nothing to do
 			break;
 
 		default:
@@ -341,6 +359,41 @@ class Liste {
 		}
 	}
 
+	/* -- Suppression d'invités -- */
+
+	public function deletionView() {}
+
+	public function deleteGuest() {
+		global $VARS, $LOGGER;
+
+		$erreur = array();
+
+		$id = $VARS->get('id', 'int');
+
+		$invite = Invite::getById($id);
+		if (NULL == $invite) {
+			$VARS->erreur('Invité inexistant');
+			return;
+		}
+
+		if ($invite->estEditable()) {
+			$deletionSucceeded = $invite->supprimer();
+
+			if (!$deletionSucceeded) {
+				$erreurs[] = sprintf("Erreur dans la procédure de suppression de  %s %s", $invite->nom, $invite->prenom);
+			}
+		} else {
+			$erreurs[] = "Impossible de supprimer cet invité.";
+			$LOGGER->error(sprintf("Impossible de supprimer l'invité %s", $this->_data['id']));
+		}
+
+		if (!empty($erreurs)) {
+			$VARS->erreur(implode('<br/>', $erreurs));
+		} else {
+			$VARS->succes(sprintf('Suppression réussie de %s %s', $invite->nom, $invite->prenom));
+		}
+	}
+
 	/* -- Categories -- */
 
 	public function categoriesView() {
@@ -475,8 +528,6 @@ class Liste {
 		$this->_db->update('invites', array('statut', $VARS->get('statut', 'int')),
 			'id=' . $VARS->get('idInvite', 'int'));
 	}
-
-	public function deletionView() {}
 
 	private static function createChangingList(&$data, $value, $idTag, $title, &$form) {
 		$content = '';

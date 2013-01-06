@@ -135,6 +135,31 @@ class Invite {
 		return NULL;
 	}
 
+	public function supprimer() {
+		global $DB, $LOGGER;
+
+		try {
+			// suppresion des catégories
+			$DB->delete('mm_user_categorie', 'user_id='.$this->_id);
+			$LOGGER->log(sprintf("Suppression des catégories l'invité %s", $this->_id));
+
+			// Suppression de l'accompagnement d'une personne
+			$DB->update('invites', array('plus_un' => -1), 'plus_un='.$this->_id);
+			$LOGGER->log(sprintf("Suppression du lien d'accompagnement de l'invité %s", $this->_id));
+
+			// suppression  même de l'invité
+			$DB->delete('invites', 'id='.$this->_id);
+			$LOGGER->log(sprintf("Suppression de l'invité %s", $this->_id));
+
+			return true;
+		} catch (Exception $e) {
+			$LOGGER->error(sprintf("Suppression impossible de l'invité %s : %s"
+				, $this->_id, $e->getMessage()));
+
+			return false;
+		}
+	}
+
 	public function mettreAJour($data) {
 		global $LOGGER;
 
@@ -227,10 +252,12 @@ class Invite {
 	 * @return string contenant la ligne en HTML
 	 */
 	public function renderLine() {
+		global $VARS;
+
 		$content = "<td>{$this->_data['nom']}</td>";
 		$content.= "<td>{$this->_data['prenom']}</td>";
 
-		$statut = "<div class='btn-group'>
+		$statut = "<div class='btn-group statut'>
 			<button class='btn ".Invite::getStatusClass($this->_data['statut'])." dropdown-toggle' data-toggle='dropdown'>";
 		$statut.= "<span statusId='{$this->_id}'>";
 		$statut.= $this->getStatus($this->_data['statut']);
@@ -241,9 +268,12 @@ class Invite {
 			$accompagne = '<i class="icon-plusUn"></i>';
 		} else  if (0 < $this->_db->count('invites', 'id', 'plus_un='.intval($this->_id))) {
 			$accompagne = '<i class="icon-avecPlusUn"></i>';
+		} else {
+			$accompagne = "<i class='icon-void'></i>";
 		}
 
-		$editionBtn = "";
+		$editionBtn = "<i class='icon-void'></i>";
+		$deleteButton = "<i class='icon-void'></i>";
 
 		if ($this->estEditable()) {
 			$statut.= '&nbsp;<b class="caret"></b></button>';
@@ -254,6 +284,9 @@ class Invite {
 				</ul>';
 
 			$editionBtn = "<a href='listing.php?view=edition&id={$this->_id}'><i class='icon-pencil'></i></a>";
+
+			$deleteButton = sprintf('<a href="listing.php?action=delete&id=%1$s&view=%2$s"><i class="icon-trash"></i></a>'
+				, $this->_id, $VARS->get('view'));
 		}
 
 		$statutInvitation = "";
@@ -263,10 +296,12 @@ class Invite {
 		
 		$statut.= "</button></div>";
 		$content.= "<td class='btn-toolbar'>"
-			."<div class='actions btn-group'>$editionBtn $accompagne</div>"
+			."<div class='actions btn-group'>$editionBtn $accompagne $deleteButton</div>"
 			." $statut $statutInvitation</td>";
+		$itemData = sprintf('itemData="%s %s"', $this->_data['nom'], $this->_data['prenom']);
+		$categories = sprintf('categories="%s"', implode('|', $this->_categories));
 
-		return '<tr>'.$content.'</tr>';
+		return "<tr $itemData $categories>$content</tr>";
 	}
 
 	/**
