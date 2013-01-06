@@ -41,36 +41,37 @@ var library  = {
 		}
 	},
 	
-	Filtre: function (container, elements) {
-		container.append('<span id="searchForm" style="display: none">'
-				+ '<input id="searchItem" value=""/>'
-				+ '<button id="resetSearch" class="btn">Reset</button>'
-			 + '</span>'
-			+ '<span id="loupe" class="btn btn btn-info">Rechercher quelqu\'un</span>');
-		
-		this._filtre = container.find('#searchItem');
-		this._elementsAFiltrer = elements;
-		
+	Filtre: function (container, elements, attribut) {
 		var object = this;
+		this._filtre = $('<input class="searchItem" value=""/>');
+		this._elementsAFiltrer = elements;
+		this._attribut = attribut;
+
+		var searchForm = $('<span class="searchForm" style="display: none"></span>');
+		var resetBtn = $('<button class="reset btn">Reset</button>');
+		var loupeBtn = $('<span class="loupe btn btn-info">Rechercher quelqu\'un</span>');
 		
-		this._filtre.keyup(function() { object.filtrer(); });
+		searchForm
+			.append(this._filtre)
+			.append(resetBtn);
+		container
+			.append(searchForm)
+			.append(loupeBtn);
 		
-		container.find('#resetSearch').click(function() {
-			object.resetFiltre(); });
-		container.find('#loupe').click(function() {
+		this._filtre.keyup(function() { object.filtrer(); });		
+		resetBtn.click(function() { object.resetFiltre(); });
+		loupeBtn.click(function() {
 			var visible = false;
-			var form = $('#searchForm');
-			var button = $('#loupe');
 			
 			return function () {
 				if (visible) {
 					object.resetFiltre();
-					form.hide();
-					button.text("Rechercher quelqu'un");
+					searchForm.hide();
+					loupeBtn.text("Rechercher quelqu'un");
 				}
 				else {
-					form.show();
-					button.text('Cacher');
+					searchForm.show();
+					loupeBtn.text('Cacher');
 					object.focus();
 				}
 				visible = !visible;
@@ -110,16 +111,21 @@ library.Filtre.prototype = {
 	
 	rechercher: function(item) {
 		var expr = new RegExp(item, 'i');
-			
-		this._elementsAFiltrer.each(function() {
+		var filter = this;
+
+		filter._elementsAFiltrer.each(function() {
 			var ligne = $(this);
-			if (expr.exec(ligne.text())) {
+			if (expr.exec(filter.getData(ligne))) {
 				ligne.show();
 			}
 			else {
 				ligne.hide();
 			}
 		});
+	},
+
+	getData: function(item) {
+		return this._attribut ? item.attr(this._attribut) : item.text();
 	},
 	
 	filtrer: function() {

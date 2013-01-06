@@ -18,12 +18,14 @@ th.headerSortDown {
 
 #searchBar {
 	height: 35px;
-	text-align: right;
+	float: right;
 }
 
 #searchBar input {
 	margin-bottom: 0px;
-	vertical-align: middke;
+	vertical-align: middle;
+}
+
 }
 
 #connectionForm.noJS input {
