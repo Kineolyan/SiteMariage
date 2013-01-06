@@ -15,7 +15,7 @@
 <h2>Comment participer à la liste de mariage</h2>
 
 <p>
-	La procédure se fait intégralement en ligne, sur le site <?php echo Html::link('listes.printemps.fr', 'http://listes.printemps.fr'); ?>.<br/>
+	La procédure se fait intégralement en ligne, sur le site <?php echo Html::link('listes.printemps.com', 'http://listes.printemps.com'); ?>.<br/>
 	Pour un accès direct au formulaire pour faire un cadeau, c'est via le lien qui suit : 
 		<?php echo Html::link('Faire un cadeau', 'http://listes-mariage.printemps.com/espace_invites/dons_recherche.aspx', array('title' => 'Accès direct à notre liste')); ?>.
 	En cas de problème, reportez-vous à la <?php echo Html::link('procédure détaillée', '#procedure_detaillee'); ?>.<br/>
@@ -34,8 +34,8 @@
     </div>
     <div id="step1" class="accordion-body collapse">
       <div class="accordion-inner">
-        Pour vous rendre sur le site, le plus simple est de cliquer sur le lien suivant <?php echo Html::link('Accès au site de la liste', 'http://listes.printemps.fr'); ?><br/>
-        Sinon, vous pouvez entrer l'adresse suivante dans votre navigateur préféré : <b>http://listes.printemps.fr</b>.<br/>
+        Pour vous rendre sur le site, le plus simple est de cliquer sur le lien suivant <?php echo Html::link('Accès au site de la liste', 'http://listes.printemps.com'); ?><br/>
+        Sinon, vous pouvez entrer l'adresse suivante dans votre navigateur préféré : <b>http://listes.printemps.com</b>.<br/>
         Une fois rendu sur la page, cliquez sur la section <b>Faire un cadeau</b>, puis <b>Cadeaux > offrir</b>.
       </div>
     </div>
