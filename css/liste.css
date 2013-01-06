@@ -40,13 +40,16 @@ ul.dropdown-menu li {
 
 .actions {
 	float: left;
-	padding: 5px;
-	width: 50px;
+	padding: 5px 10px 5px 5px
 }
 
 .statut button {
 	width: 85px;
 	margin-right: 10px;
+}
+
+.statut button .caret {
+	float: right;
 }
 
 .icon-void {
