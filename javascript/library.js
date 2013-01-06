@@ -1,4 +1,12 @@
 var library  = {
+	extends: function(src, content) {
+		if (content && src) {
+			for (key in content) {
+				src[key] = content[key];
+			}
+		}
+	},
+
 	parseJSONArray: function(data) {
 		console.log("parseJSONArray " + data);
 		if ('[]' == data) {
@@ -77,6 +85,71 @@ var library  = {
 				visible = !visible;
 			}
 		}());
+	},
+
+	Selector: function(container, elements, values, params) {
+		if (undefined == params) {
+			params = {};
+		}
+
+		var object = this;
+		this._elementsAFiltrer = elements;
+		this._values = {};
+		for (key in values) {
+			this._values[values[key]] = false;
+		}
+
+		this._attribut = params.attribut;
+		var texts = { 
+			select: "Sélectionner",
+			hide: "Cacher",
+			reset: "Reset"
+		};
+		library.extends(texts, params.texts);
+
+		var selectorForm = $('<div class="selectorForm" style="display: none"></div>');
+		var resetBtn = $('<button class="reset btn">' + texts.reset + '</button>');
+		var loupeBtn = $('<span class="loupe btn btn-info">' + texts.select + '</span>');
+		
+		this._selections = [];
+		var selectors = $('<ul class="selections"></ul>');
+		var selectionCbk = function() { object.selectionner($(this)); };
+		for (value in this._values) {
+			var identifier = 'field' + value;
+			var checkbox = $('<input class="selectorItem" type="checkbox" id="' + identifier 
+				+ '" value="' + value + '"/>');
+			var label = $('<label class="checkbox" for="' + identifier + '">' + value + '</label>');
+
+			this._selections.push(checkbox);
+			checkbox.change(selectionCbk);
+
+			$('<li>').append(checkbox).append(label).appendTo(selectors);
+		}
+		
+		selectorForm
+			.append(resetBtn)
+			.append(selectors);
+		container
+			.append(loupeBtn)
+			.append(selectorForm);
+		
+		resetBtn.click(function() { object.resetSelector(); });
+		loupeBtn.click(function() {
+			var visible = false;
+			
+			return function () {
+				if (visible) {
+					selectorForm.hide();
+					loupeBtn.text(texts.select);
+				}
+				else {
+					selectorForm.show();
+					loupeBtn.text(texts.hide);
+				}
+				visible = !visible;
+			}
+		}());
+
 	},
 	
 	ajax: function(params) {
@@ -161,5 +234,44 @@ library.Filtre.prototype = {
 	
 	focus: function() {
 		this._filtre.focus();
+	}
+};
+
+library.Selector.prototype = {	
+	resetSelector: function() {
+		this._elementsAFiltrer.show();
+		$.each(this._selections, function(index, checkbox) { checkbox.attr('checked', false); } );
+		for (value in this._values) {
+			this._values[value] = false;
+		}
+	},
+
+	getData: function(item) {
+		return this._attribut ? item.attr(this._attribut) : item.text();
+	},
+	
+	selectionner: function(item) {
+		this._values[item.val()] = item.is(':checked');
+		console.log(this._values);
+
+		var search = [];
+		for (value in this._values) {
+			if (this._values[value]) {
+				search.push(value);
+			}
+		}
+
+		var expr = new RegExp(search.join('|'), 'i');
+		var filter = this;
+
+		filter._elementsAFiltrer.each(function() {
+			var ligne = $(this);
+			if (expr.exec(filter.getData(ligne))) {
+				ligne.show();
+			}
+			else {
+				ligne.hide();
+			}
+		});
 	}
 };

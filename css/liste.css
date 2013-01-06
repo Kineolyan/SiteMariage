@@ -26,6 +26,10 @@ th.headerSortDown {
 	vertical-align: middle;
 }
 
+#selectBar {
+	height: 35px;
+	float: left;
+	margin-left: 30px;
 }
 
 #connectionForm.noJS input {
