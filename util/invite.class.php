@@ -7,6 +7,8 @@ class Invite {
 	private $_editable;
 	private $_categories;
 
+	private $_id;
+
 	private function __construct($id, $data) {
 		global $DB, $VISITOR;
 
@@ -21,6 +23,9 @@ class Invite {
 		else {
 			throw new Exception("Impossible de créer un invité sans id ou données {id = $id, data = $data}");
 		}
+
+		$this->_id = array_key_exists('id', $this->_data) ? intval($this->_data['id']) : -1;
+
 		$this->_editable = ($this->_visitor->id() == $this->_data['official_id']
 				|| $this->_visitor->isAdmin());
 
@@ -64,7 +69,7 @@ class Invite {
 		if ($this->_db->select(
 				'mm_user_categorie JOIN categories ON categories.id = mm_user_categorie.categorie_id',
 				'mm_user_categorie.categorie_id AS id, categories.categorie',
-				 'user_id='.$this->_data['id'])) {
+				 'user_id='.$this->_id)) {
 			while ($data = $this->_db->fetch()) {
 				$this->_categories[$data['id']] = $data['categorie'];
 			}
@@ -93,7 +98,6 @@ class Invite {
 
 	static public function ajouter($data) {
 		global $DB, $LOGGER;
-		global $DB;
 
 		if (Invite::verifierDonnees($data)) {
 			// Ajout du timestamp
@@ -118,7 +122,7 @@ class Invite {
 			// Ajout du timestamp
 			$data['last_modification'] =  'NOW()';
 
-			$this->_db->update('invites', $data, 'id='.$this->_data['id']);
+			$this->_db->update('invites', $data, 'id='.$this->_id);
 			$LOGGER->log(sprintf("Mise à jour de %s", $this->_id));
 			return true;
 		}
@@ -208,14 +212,14 @@ class Invite {
 
 		$statut = "<div class='btn-group'>
 			<button class='btn ".Invite::getStatusClass($this->_data['statut'])." dropdown-toggle' data-toggle='dropdown'>";
-		$statut.= "<span statusId='{$this->_data['id']}'>";
+		$statut.= "<span statusId='{$this->_id}'>";
 		$statut.= $this->getStatus($this->_data['statut']);
 		$statut.= '</span>';
 
 		$accompagne = '';
 		if (-1 != $this->_data['plus_un']) {
 			$accompagne = '<i class="icon-plusUn"></i>';
-		} else  if (0 < $this->_db->count('invites', 'id', 'plus_un='.intval($this->_data['id']))) {
+		} else  if (0 < $this->_db->count('invites', 'id', 'plus_un='.intval($this->_id))) {
 			$accompagne = '<i class="icon-avecPlusUn"></i>';
 		}
 
@@ -229,7 +233,7 @@ class Invite {
 				<li>Absent</li>
 				</ul>';
 
-			$editionBtn = "<a href='listing.php?view=edition&id={$this->_data['id']}'><i class='icon-pencil'></i></a>";
+			$editionBtn = "<a href='listing.php?view=edition&id={$this->_id}'><i class='icon-pencil'></i></a>";
 		}
 
 		$statutInvitation = "";
@@ -255,15 +259,19 @@ class Invite {
 	}
 
 	public function changerStatut($nouveauStatut) {
+		global $LOGGER;
+
 		$statut = Invite::getStatusCode($nouveauStatut);
 
 		if ($this->_editable && NULL !== $statut) {
 			if ($statut != $this->_data['statut']) {
 				$this->_db->update('invites',
 					array('statut' => $statut),
-					'id=' . $this->_data['id']);
-
-				$this->_data['statut'] = $statut;
+					'id=' . $this->_id);
+				
+				$LOGGER->log(sprintf("Le statut de %s change : %s -> %s"
+					, $this->_id, $this->_data['statut'], $statut));
+				$this->_data['statut'] = $statut;	
 			}
 
 			return $nouveauStatut;
@@ -275,6 +283,8 @@ class Invite {
 	}
 
 	public function envoyerInvitation($envoyer) {
+		global $LOGGER;
+
 		$dbEnvoi = 'invitation_send';
 
 		if ($this->_editable) {
@@ -283,8 +293,10 @@ class Invite {
 			if ($statutEnvoi != $this->_data[$dbEnvoi]) {
 				$this->_db->update('invites',
 					array($dbEnvoi => $statutEnvoi),
-					'id=' . $this->_data['id']);
+					'id=' . $this->_id);
 
+				$LOGGER->log(sprintf("%s de l'invation pour %s"
+					, $envoyer? 'Envoi' : 'Récupération', $this->_id));
 				$this->_data[$dbEnvoi] = $statutEnvoi;
 			}
 
@@ -303,17 +315,22 @@ class Invite {
 	 * @param {bool} $replace indique un remplacement du plus_un
 	 */
 	public function changerPlusUn($id, $replace) {
+		global $LOGGER;
+
 		try {
-			$this->_db->update('invites', array('plus_un' => -1), "plus_un=".$this->_data['id']);
+			$this->_db->update('invites', array('plus_un' => -1), "plus_un=".$this->_id);
+			$LOGGER->log(sprintf("Suppression du plus-un de %s", $this->_id));
 		} catch (Exception $e) {
+			$LOGGER->error(sprintf("Impossible de supprimer le plus-un de %s", $this->_id));
 			return "Impossible de supprimer l'ancien plus un.";
 		}
 
-		var_dump($replace);
 		if ($replace) {
 			try {
-				$this->_db->update('invites', array('plus_un' => $this->_data['id']), 'id='.$id);
+				$this->_db->update('invites', array('plus_un' => $this->_id), 'id='.$id);
+				$LOGGER->log(sprintf("Changement du plus-un de %s pour %d", $this->_id, $id));
 			} catch (Exception $e) {
+				$LOGGER->error(sprintf("Impossible d'ajouter le plus-un %d de %s", $id, $this->_id));
 				return 'Impossible de mettre à jour le plus un';
 			}
 		}
