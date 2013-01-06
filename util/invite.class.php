@@ -35,14 +35,34 @@ class Invite {
 	/**
 	 * Renvoie une nouvelle instance d'invité créée par son id
 	 * @param int $id est l'id de l'invité
+	 * @return Invite demande ou NULL en cas d'erreur
 	 */
-	static public function getById($id) {	return new Invite($id, NULL);	}
+	static public function getById($id) {
+		global $LOGGER;
+
+		try {
+			return new Invite($id, NULL);
+		} catch (Exception $e) {
+			$LOGGER->error(sprintf("Creation de l'invite %d impossible : %s", intval($id), $e->getMessage()));
+			return NULL;
+		}
+	}
 
 	/**
 	 * Renvoie une nouvelle instance d'invité créée à partir de ses données
 	 * @param array $data
+	 * @return Invite demande ou NULL en cas d'erreur
 	 */
-	static public function getByData($data) {	return new Invite(NULL, $data);	}
+	static public function getByData($data) {
+		global $LOGGER;
+
+		try {
+			return new Invite(NULL, $data);
+		} catch (Exception $e) {
+			$LOGGER->error(sprintf("Creation de l'invite suivant les data impossible : %s", $e->getMessage()));
+			return NULL;
+		}
+	}
 
 	/**
 	 * Renvoie une nouvelle instance d'invité créée à partir d'une requête
