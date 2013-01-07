@@ -1,6 +1,6 @@
 <?php
 
-include_once 'scripts/login.php';
+include_once 'scripts/config.php';
 include_once 'util/dba/dba.mysql.class.php';
 include_once 'util/dba/dba.pdo.class.php';
 include_once 'util/visitor.class.php';
