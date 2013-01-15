@@ -16,7 +16,9 @@ include_once 'util/logger.class.php';
 
 session_start();
 
-set_exception_handler(array('Pager', 'handleException'));
+if (defined('PRODUCTION_SITE')) { 
+	set_exception_handler(array('Pager', 'handleException'));
+}
 
 // Creation de la base de données
 if (isset($_GET['clear']) && 'session'==$_GET['clear']) {
