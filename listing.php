@@ -86,7 +86,6 @@ else {
 	case 'listePerso':
 		echo "<div class='row'>$selectBarHtml $searchBarHtml</div>" . $liste->personnalListView();
 		$page->addJs('javascript/listing.liste.js');
-		$page->addJs('javascript/jquery.tablesorter.min.js');
 		break;
 
 	case 'edition':
@@ -107,7 +106,6 @@ else {
 	default:
 		echo "<div class='row'>$selectBarHtml $searchBarHtml</div>" . $liste->listView();
 		$page->addJs('javascript/listing.liste.js');
-		$page->addJs('javascript/jquery.tablesorter.min.js');
 	}
 ?>
 </div>
