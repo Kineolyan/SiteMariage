@@ -34,7 +34,6 @@ function creerSelectionCategories() {
 
 $(function() {
 	$('.btn-group li').click(majStatut);
-	$("#invites").tablesorter({sortList: [[0,0], [1,0]], headers: { 2:{sorter: false}, }});
 	
 	new library.Filtre($('#searchBar'), $('#invites tbody tr'), 'itemData');
 	creerSelectionCategories();

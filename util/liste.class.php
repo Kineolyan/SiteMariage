@@ -81,7 +81,7 @@ class Liste {
 	 * @return string contenant la liste
 	 */
 	public function listView() {
-		if (0 < $this->_db->select('invites', '*')) {
+		if (0 < $this->_db->select('invites', '*', '', array('orderBy' => 'nom ASC, prenom ASC'))) {
 			$content = '';
 			while ($dataInvite = $this->_db->fetch()) {
 				$invite = Invite::getByData($dataInvite);
@@ -105,7 +105,8 @@ class Liste {
 	 * @return string contenant la liste
 	 */
 	public function personnalListView() {
-		if (0 < $this->_db->select('invites', '*', 'official_id=' . $this->_visitor->id())) {
+		if (0 < $this->_db->select('invites', '*', 'official_id=' . $this->_visitor->id()
+				, array('orderBy' => 'nom ASC, prenom ASC'))) {
 			$content = '';
 			while ($dataInvite = $this->_db->fetch()) {
 				$invite = Invite::getByData($dataInvite);
@@ -489,7 +490,8 @@ class Liste {
 		$aEnvoyer = array();
 		$envoyes = array();
 
-		$this->_db->select('invites', 'id, nom, prenom, invitation_send', '', array('orderBy' => 'nom, prenom'));
+		$this->_db->select('invites', 'id, nom, prenom, invitation_send', ''
+			, array('orderBy' => 'nom ASC, prenom ASC'));
 		while ($inviteData = $this->_db->fetch()) {
 			if (0 != $inviteData['invitation_send']) {
 				$envoyes[$inviteData['id']] = "$inviteData[nom] $inviteData[prenom]";
