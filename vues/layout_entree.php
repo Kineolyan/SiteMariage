@@ -14,5 +14,7 @@ include_once 'util/helpers/pager.class.php';
 	<div class="container">
 		<?php echo $this->content(); ?>
 	</div>
+
+<?php include_once "scripts/analytics.php"; ?>
 </body>
 </html>
