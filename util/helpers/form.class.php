@@ -78,7 +78,7 @@ class Form {
 		return $radioButtons;
 	}
 
-	public function check($name, $label, $value, $selected) {
+	public function check($name, $labelValue, $value, $selected) {
 		$checkbox = "";
 		$for = $this->forValue($name.'_'.$value);
 
@@ -86,9 +86,11 @@ class Form {
 		if ($selected) {
 			$checkbox.= " checked='checked'";
 		}
-		$checkbox.= "/><label class='checkbox' for='$for'>$label</label>\n";
+		$checkbox.= "/>";
+		
+		$label = ('' != $labelValue) ? "<label class='checkbox' for='$for'>$labelValue</label>\n" : '';
 
-		return $checkbox;
+		return $checkbox . $label;
 	}
 
 	public function select($name, $label, $values, $selected='', $multiple=false) {
