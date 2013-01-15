@@ -90,15 +90,7 @@ foreach (Categories::getCategories() as $categorieId => $categorie) {
 		$categorie, 
 		$stats[Invite::getStatus(1)], $stats[Invite::getStatus(-1)], $stats[Invite::getStatus(0)], 
 		$stats["total"]);
-
-	sumStats($globalStats, $stats);
 }
-
-echo sprintf("<tr class='totalPresence'> <td>Total par présence</td> <td>%d</td> <td>%d</td> <td>%d</td> <td>%d</td> </tr>",
-		$globalStats[Invite::getStatus(1)],
-		$globalStats[Invite::getStatus(-1)], 
-		$globalStats[Invite::getStatus(0)], 
-		$globalStats["total"]);
 ?>
 	</tbody>
 </table>
