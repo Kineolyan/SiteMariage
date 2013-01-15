@@ -7,6 +7,7 @@ if (defined('PRODUCTION_SITE')) {
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-37484983-1']);
+  _gaq.push(['_setDomainName', 'peyrusse.free.fr']);
   _gaq.push(['_trackPageview']);
 
   (function() {
