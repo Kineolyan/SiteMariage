@@ -36,12 +36,11 @@ include_once 'util/helpers/pager.class.php';
 		<div id='content' class="row">
 			<?php echo $this->content(); ?>
 		</div>
-
-		<?php foreach ($this->js() as $script) {
-			echo "<script type='text/javascript' src='$script'></script>";
-		} ?>
-
 	</div>
+
+<?php foreach ($this->js() as $script) {
+	echo "<script type='text/javascript' src='$script'></script>";
+} ?>
 
 <?php include_once "scripts/analytics.php"; ?>
 </body>
