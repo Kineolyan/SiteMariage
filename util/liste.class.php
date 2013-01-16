@@ -400,18 +400,19 @@ class Liste {
 	public function categoriesView() {
 		$form = new Form('CategoriesForm');
 
-		$headers = '<tr><th></th>';
+		$headers = '<tr><th class="nameRow">&nbsp;</th>';
 		foreach (Categories::getCategories() as $id => $categorie) {
 			$headers .= "<th class='check' category='$categorie'>$categorie</th>";
 		}
 		$headers .= '</tr>';
+		$columNumber = 1 + count(Categories::getCategories());
 
 		$rows = array();
 		if (0 < $this->_db->select('invites', 'id', '', array('orderBy' => 'nom ASC, prenom ASC'))) {
 			while ($inviteData = $this->_db->fetch()) {
 				$invite = Invite::getById(intval($inviteData['id']));
 
-				$row = "<tr><td>{$invite->nom} {$invite->prenom}</td>";
+				$row = "<tr><td class='nameRow'>{$invite->nom} {$invite->prenom}</td>";
 				foreach (Categories::getCategories() as $id => $categorie) {
 					$row .= "<td class='check' category='$categorie'>"
 							. $form->check("links[$invite->id][$id]", "", "",
@@ -424,8 +425,20 @@ class Liste {
 		}
 
 		$formHtml = $form->create('listing.php', 'categoriesForm');
-		$formHtml .= "<table id='categoriesTable' class='table table-striped'>" . '<thead>'
-				. $headers . '</thead>' . '<tbody>' . implode("\n", $rows) . '</tbody></table>';
+		$formHtml .= sprintf(<<<TABLE
+<table id="categoriesTable">
+	<thead>%s</thead>
+	<tbody><tr><td colspan="%d">
+		<div class="innnerTableContainer">
+			<table id="innerCategoriesTable" class="table table-stripped">
+				<thead>\n %s \n</thead>
+				<tbody>\n %s \n</tbody>
+			</table>
+		</div>
+	</td></tr></tbody>
+</table>
+TABLE
+, $headers, $columNumber, $headers, implode("\n", $rows));
 		$formHtml .= $form->hidden('action', 'categorize');
 		$formHtml .= $form
 				->submit('', 'Enregistrer les catégories', array('class' => 'btn btn-success'));

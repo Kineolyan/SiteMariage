@@ -1,3 +1,3 @@
 $(function() {
-	new library.Filtre($('#searchBar'), $('#categoriesTable tbody tr'));
+	new library.Filtre($('#searchBar'), $('#innnerCategoriesTable tbody tr'));
 });
