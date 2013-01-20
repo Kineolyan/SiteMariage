@@ -164,6 +164,11 @@ class Invite {
 		global $LOGGER;
 
 		if (Invite::verifierDonnees($data)) {
+			if (!$this->besoinDeMiseAJour($data)) {
+				$LOGGER->log(sprintf("Données déjà à jour pour %s", $this->_id));
+				return true;
+			}
+
 			// Ajout du timestamp
 			$data['last_modification'] =  'NOW()';
 
@@ -184,6 +189,16 @@ class Invite {
 		}
 
 		return true;
+	}
+
+	private function besoinDeMiseAJour($data) {
+		foreach ($this->_data as $field => $value) {
+			if (isset($data[$field]) && $data[$field] != $value) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static function getStatus($statusCode) {
@@ -283,8 +298,8 @@ class Invite {
 				<li>Absent</li>
 				</ul>';
 
-			$editionBtn = "<a href='listing.php?view=edition&id={$this->_id}'><i class='icon-pencil'></i></a>";
-
+			$editionBtn = sprintf('<a href="listing.php?view=edition&id=%d" class="editionLink">%s</a>'
+				, $this->_id, '<i class="icon-pencil"></i>');
 			$deleteButton = sprintf('<a href="listing.php?action=delete&id=%1$s&view=%2$s"><i class="icon-trash"></i></a>'
 				, $this->_id, $VARS->get('view'));
 		}
