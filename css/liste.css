@@ -46,16 +46,21 @@ ul.dropdown-menu li {
 
 .actions {
 	float: left;
-	padding: 5px 10px 5px 5px
+	padding: 5px 10px 5px 5px;
+	text-align: center;
+	width: 75px;
 }
 
 .statut button {
-	width: 85px;
+	width: 95px;
 	margin-right: 10px;
 }
 
-.statut button .caret {
-	float: right;
+.statut button .caret {}
+
+[class^="icon-"], 
+[class*=" icon-"] {
+	margin: 0 3px;
 }
 
 .icon-void {
