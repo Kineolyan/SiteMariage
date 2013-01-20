@@ -279,21 +279,22 @@ class Liste {
 				$plusUnHtml .= $form->select('plusUnChoice', '', $possiblesPlusUn, '--');
 			} else {
 				$hote = Invite::getById(intval($invite->plus_un));
+				$hoteUrl = "listing.php?view=edition&id={$hote->id}";
 
 				$plusUnHtml = '<h2>Accompagne</h2>';
-				$plusUnHtml .= "<p><a href='listing.php?view=edition&id={$hote->id}'>"
-						. "{$hote->nom} {$hote->prenom}</a></p>";
+				$plusUnHtml .= sprintf('<p><a href="%s">%s %s</a></p>'
+					, $hoteUrl, $hote->nom, $hote->prenom);
 			}
 
 			$formHtml .= $form->hidden('action', 'edition') . "<div class='row'>"
 					. "<div class='span5'>$inviteHtml</div>" . "<div class='span5'>$plusUnHtml</div>"
-					. "</div>" . $form->submit('', 'Enregistrer') . $form->end();
+					. "</div>" . $form->submit('', 'Enregistrer', array('class' => 'btn')) . $form->end();
 			$page->content($formHtml);
 		} else {
 			$page->content("Vous n'avez pas le droit d'éditer cette personne");
 		}
 
-		return $page->renderComponent();
+		return $page->renderComponent(false, '', '', "Vous n'avez pas accès à cette section");
 	}
 
 	private function updateGuests() {
