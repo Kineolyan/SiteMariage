@@ -151,6 +151,23 @@ var library  = {
 		}());
 
 	},
+
+	Modal: function(title) {
+		var object = this;
+		this.element = $('<div id="modalEditor" class="modal hide fade">');
+		
+		var header = $('<div class="modal-header">');
+		header.append('<h3 id="myModalLabel">').text(title);
+		var closeX = $('<button type="button" class="close">×</button>')
+			.click(function() { object.close(); })
+			.prependTo(header);
+
+		var body = $('<div class="modal-body">');
+		this.frame = $('<iframe>').appendTo(body);
+
+		this.element.append(header).append(body)
+			.appendTo('body');
+	},
 	
 	ajax: function(params) {
 		var actions = {
@@ -273,5 +290,17 @@ library.Selector.prototype = {
 				ligne.hide();
 			}
 		});
+	}
+};
+
+library.Modal.prototype = {
+	show: function(url) {
+		this.frame.attr('src', url);
+		this.element.removeClass('hide fade');
+	},
+
+	close: function() {
+		this.frame.attr('src', 'about:blank');
+		this.element.addClass('hide fade');
 	}
 };
