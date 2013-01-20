@@ -171,7 +171,7 @@ class Liste {
 			{$form->submit('', 'Enregistrer')}
 			{$form->end()}");
 
-		return $page->renderComponent();
+		return $page->renderComponent(false);
 	}
 
 	private function registerGuests() {
@@ -247,7 +247,7 @@ class Liste {
 			$aPlusUn = false;
 			$form = new Form('edition');
 
-			$formHtml = $form->create('listing.php', 'edition');
+			$formHtml = $form->create('listing.php'.(Pager::isModal() ? '?'.Pager::makeModal(): ''), 'edition');
 
 			$inviteHtml = '<h2>Invité</h2>';
 			$inviteHtml .= $form->hidden("id", $invite->id);
@@ -280,6 +280,10 @@ class Liste {
 			} else {
 				$hote = Invite::getById(intval($invite->plus_un));
 				$hoteUrl = "listing.php?view=edition&id={$hote->id}";
+				if (Pager::isModal()) {
+					$hoteUrl = Pager::makeModal($hoteUrl);
+				}
+
 
 				$plusUnHtml = '<h2>Accompagne</h2>';
 				$plusUnHtml .= sprintf('<p><a href="%s">%s %s</a></p>'

@@ -1,0 +1,30 @@
+#modalEditor {
+	padding: 0px;
+	width: 620px;
+}
+
+#modalEditor .modal-body {
+	height: 400px;
+	overflow: visible;
+	padding: 0px;
+}
+
+#modalEditor iframe {
+	border: none;
+	height:	100%;
+	width: 100%;
+}
+
+[id*="modal-"] {
+	padding: 5px;
+	width: 590px;
+}
+
+[id*="modal-"] .row {
+	margin-left: 0px;
+	width: 590px;
+}
+
+[id*="modal-"] .span5 {
+	width: 250px;
+}
