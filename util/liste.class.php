@@ -327,37 +327,42 @@ class Liste {
 
 		$plusUnChoice = $VARS->post('plusUnChoice', 'int');
 		$plusUnId = $VARS->post('plusUnId', 'int');
-		if (-2 == $plusUnChoice && -1 != $plusUnId) {
-			// Supprimer le plus un
-			$res = $invite->changerPlusUn($plusUnId, false);
-			if ('' != $res) {
-				$erreurs[] = $res;
-			}
-		} else if (-1 != $plusUnChoice) {
-			// Changer le plus un
-			$res = $invite->changerPlusUn($plusUnChoice, true);
-			if ('' != $res) {
-				$erreurs[] = $res;
-			}
-		} else if (-1 != $plusUnId) {
-			// Editer le plus un
-			Invite::getById($plusUnId)->mettreAJour(
-							array('nom' => $VARS->post('plusUnNom', 'string'),
-									"prenom" => $VARS->post('plusUnPrenom', 'string')));
-		} else {
-			// Créer un nouvel invité
-			$nomPlusUn = $VARS->post('plusUnNom', 'string');
-			$prenomPlusUn = $VARS->post('plusUnPrenom', 'string');
-			$res = Invite::ajouter(
-					array('nom' => $nomPlusUn, 'prenom' => $prenomPlusUn,
-							'official_id' => $invite->id, 'plus_un' => $invite->id));
-			if (!$res) {
-				$erreurs[] = "{ $nomPlusUn $prenomPlusUn à l'ajout d'un \"plus un\" }";
+		if ($VARS->has('plusUnId','post')) {
+			if (-2 == $plusUnChoice && -1 != $plusUnId) {
+				// Supprimer le plus un
+				$res = $invite->changerPlusUn($plusUnId, false);
+				if ('' != $res) {
+					$erreurs[] = $res;
+				}
+			} else if (-1 != $plusUnChoice) {
+				// Changer le plus un
+				$res = $invite->changerPlusUn($plusUnChoice, true);
+				if ('' != $res) {
+					$erreurs[] = $res;
+				}
+			} else if (-1 != $plusUnId) {
+				// Editer le plus un
+				Invite::getById($plusUnId)->mettreAJour(array(
+					'nom' => $VARS->post('plusUnNom', 'string'), "prenom" => $VARS->post('plusUnPrenom', 'string'))
+				);
+			} else {
+				// Créer un nouvel invité
+				$nomPlusUn = $VARS->post('plusUnNom', 'string');
+				$prenomPlusUn = $VARS->post('plusUnPrenom', 'string');
+				$res = Invite::ajouter(
+						array('nom' => $nomPlusUn, 'prenom' => $prenomPlusUn,
+								'official_id' => $invite->id, 'plus_un' => $invite->id));
+				if (!$res) {
+					$erreurs[] = "{ $nomPlusUn $prenomPlusUn à l'ajout d'un \"plus un\" }";
+				}
 			}
 		}
 
 		if (!empty($erreurs)) {
 			$VARS->erreur(implode('<br/>', $erreurs));
+		}
+		else {
+			$VARS->succes('Tous les invités ont été mis à jour.');
 		}
 	}
 
