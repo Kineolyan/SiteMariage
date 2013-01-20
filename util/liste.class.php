@@ -171,7 +171,7 @@ class Liste {
 			{$form->submit('', 'Enregistrer')}
 			{$form->end()}");
 
-		return $page->renderComponent();
+		return $page->renderComponent(false);
 	}
 
 	private function registerGuests() {
@@ -247,7 +247,7 @@ class Liste {
 			$aPlusUn = false;
 			$form = new Form('edition');
 
-			$formHtml = $form->create('listing.php', 'edition');
+			$formHtml = $form->create('listing.php'.(Pager::isModal() ? '?'.Pager::makeModal(): ''), 'edition');
 
 			$inviteHtml = '<h2>Invité</h2>';
 			$inviteHtml .= $form->hidden("id", $invite->id);
@@ -279,21 +279,26 @@ class Liste {
 				$plusUnHtml .= $form->select('plusUnChoice', '', $possiblesPlusUn, '--');
 			} else {
 				$hote = Invite::getById(intval($invite->plus_un));
+				$hoteUrl = "listing.php?view=edition&id={$hote->id}";
+				if (Pager::isModal()) {
+					$hoteUrl = Pager::makeModal($hoteUrl);
+				}
+
 
 				$plusUnHtml = '<h2>Accompagne</h2>';
-				$plusUnHtml .= "<p><a href='listing.php?view=edition&id={$hote->id}'>"
-						. "{$hote->nom} {$hote->prenom}</a></p>";
+				$plusUnHtml .= sprintf('<p><a href="%s">%s %s</a></p>'
+					, $hoteUrl, $hote->nom, $hote->prenom);
 			}
 
 			$formHtml .= $form->hidden('action', 'edition') . "<div class='row'>"
 					. "<div class='span5'>$inviteHtml</div>" . "<div class='span5'>$plusUnHtml</div>"
-					. "</div>" . $form->submit('', 'Enregistrer') . $form->end();
+					. "</div>" . $form->submit('', 'Enregistrer', array('class' => 'btn')) . $form->end();
 			$page->content($formHtml);
 		} else {
 			$page->content("Vous n'avez pas le droit d'éditer cette personne");
 		}
 
-		return $page->renderComponent();
+		return $page->renderComponent(false, '', '', "Vous n'avez pas accès à cette section");
 	}
 
 	private function updateGuests() {
@@ -326,37 +331,42 @@ class Liste {
 
 		$plusUnChoice = $VARS->post('plusUnChoice', 'int');
 		$plusUnId = $VARS->post('plusUnId', 'int');
-		if (-2 == $plusUnChoice && -1 != $plusUnId) {
-			// Supprimer le plus un
-			$res = $invite->changerPlusUn($plusUnId, false);
-			if ('' != $res) {
-				$erreurs[] = $res;
-			}
-		} else if (-1 != $plusUnChoice) {
-			// Changer le plus un
-			$res = $invite->changerPlusUn($plusUnChoice, true);
-			if ('' != $res) {
-				$erreurs[] = $res;
-			}
-		} else if (-1 != $plusUnId) {
-			// Editer le plus un
-			Invite::getById($plusUnId)->mettreAJour(
-							array('nom' => $VARS->post('plusUnNom', 'string'),
-									"prenom" => $VARS->post('plusUnPrenom', 'string')));
-		} else {
-			// Créer un nouvel invité
-			$nomPlusUn = $VARS->post('plusUnNom', 'string');
-			$prenomPlusUn = $VARS->post('plusUnPrenom', 'string');
-			$res = Invite::ajouter(
-					array('nom' => $nomPlusUn, 'prenom' => $prenomPlusUn,
-							'official_id' => $invite->id, 'plus_un' => $invite->id));
-			if (!$res) {
-				$erreurs[] = "{ $nomPlusUn $prenomPlusUn à l'ajout d'un \"plus un\" }";
+		if ($VARS->has('plusUnId','post')) {
+			if (-2 == $plusUnChoice && -1 != $plusUnId) {
+				// Supprimer le plus un
+				$res = $invite->changerPlusUn($plusUnId, false);
+				if ('' != $res) {
+					$erreurs[] = $res;
+				}
+			} else if (-1 != $plusUnChoice) {
+				// Changer le plus un
+				$res = $invite->changerPlusUn($plusUnChoice, true);
+				if ('' != $res) {
+					$erreurs[] = $res;
+				}
+			} else if (-1 != $plusUnId) {
+				// Editer le plus un
+				Invite::getById($plusUnId)->mettreAJour(array(
+					'nom' => $VARS->post('plusUnNom', 'string'), "prenom" => $VARS->post('plusUnPrenom', 'string'))
+				);
+			} else {
+				// Créer un nouvel invité
+				$nomPlusUn = $VARS->post('plusUnNom', 'string');
+				$prenomPlusUn = $VARS->post('plusUnPrenom', 'string');
+				$res = Invite::ajouter(
+						array('nom' => $nomPlusUn, 'prenom' => $prenomPlusUn,
+								'official_id' => $invite->id, 'plus_un' => $invite->id));
+				if (!$res) {
+					$erreurs[] = "{ $nomPlusUn $prenomPlusUn à l'ajout d'un \"plus un\" }";
+				}
 			}
 		}
 
 		if (!empty($erreurs)) {
 			$VARS->erreur(implode('<br/>', $erreurs));
+		}
+		else {
+			$VARS->succes('Tous les invités ont été mis à jour.');
 		}
 	}
 

@@ -12,10 +12,11 @@ $(function() {
 	boutonEnregistrer
 		.popover({
 			animation: true,
+			html: true,
 			placement: 'bottom',
 			trigger: 'manual',
 			title: 'Accès à la zone privée',
-			content: $('<div/>').append($('#connectionContainer form').remove()).html(),
+			content: $('<div>').append($('#connectionContainer form').remove()).html(),
 			delay: { show: 100, hide: 10 }
 		})
 		.click(function() {

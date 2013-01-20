@@ -125,7 +125,7 @@ class Pager {
 			$connectedForm = new Form("connectedForm");
 			$html = $connectedForm->create('', 'connectedForm');
 			$html .= "<p>{$this->m_visitor->nom()}&nbsp;";
-			$html .= $connectedForm->submit('deconnexion', 'Déconnecter');
+			$html .= $connectedForm->submit('deconnexion', 'Déconnecter', array("class" => "btn"));
 			$html .= '</p>' . $connectedForm->end();
 
 			return $html;
@@ -136,7 +136,7 @@ class Pager {
 			$html .= '<p>' . $connectionForm->input('login', 'Login : ') . '<br/>';
 			$html .= $connectionForm->password('password', 'Mot de passe : ')
 					. '<br/>';
-			$html .= $connectionForm->submit('connexion', 'Connecter');
+			$html .= $connectionForm->submit('connexion', 'Connecter', array("class" => "btn"));
 			$html .= '</p>' . $connectionForm->end();
 
 			return $html;
@@ -145,6 +145,22 @@ class Pager {
 
 	public function visible() {
 		return $this->m_visitor->hasAccess($this->m_page);
+	}
+
+	static public function isModal() {
+		global $VARS;
+
+		return 'modal' == $VARS->get('display') || 'modal' == $VARS->post('display');
+	}
+
+	static public function makeModal($url = NULL) {
+		if (NULL === $url) {
+			return 'display=modal';
+		}
+		else {
+			return $url .(FALSE !== strpos($url, '?')? '&' : '?').'display=modal';
+		}
+		
 	}
 
 	// Génération de la page complète
@@ -207,18 +223,16 @@ class Pager {
 
 	// Génération d'un composant de la page
 
-	function renderComponent($id = '', $class = '') {
-		if ($this->m_visitor->hasAccess($this->m_page)) {
-			if ('' == $id || '' == $class) {
-				return $this->m_content;
-			}
-			else if ('' != $id) {
-				return "<div id='$id'>{$this->m_content}</div>";
-			}
-			else {
-				return "<div class='$class'>{$this->m_content}</div>";
-			}
+	function renderComponent($wrapped, $id = '', $class = '', $errorMessage = '') {
+		if ($wrapped) {
+			$attributes = ('' != $id & '' != $class) ? sprintf('id="%1$s" class="%2$s"', $id, $class) : '';
+			$template = '<div '.$attributes.'>%s</div>';
 		}
+		else {
+			$template = "%s";
+		}
+
+		return sprintf($template, $this->m_visitor->hasAccess($this->m_page)? $this->m_content :  $errorMessage);
 	}
 
 	function renderAjax() {
@@ -243,8 +257,12 @@ class Pager {
 		return $page;
 	}
 
-	static public function redirect($page) {
-		header('Location:' . self::url($page));
+	static public function redirect($url) {
+		if (Pager::isModal()) {
+			$url = self::makeModal($url);
+		}
+
+		header('Location:' . $url);
 	}
 
 	static public function handleException($exception) {

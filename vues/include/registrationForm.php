@@ -17,6 +17,6 @@ $page->content = <<<REGISTRATION
 </form>
 REGISTRATION;
 
-$page->renderComponent();
+$page->renderComponent(false);
 
 ?>

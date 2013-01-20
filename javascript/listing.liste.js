@@ -37,4 +37,12 @@ $(function() {
 	
 	new library.Filtre($('#searchBar'), $('#invites tbody tr'), 'itemData');
 	creerSelectionCategories();
+
+	var modalEditor = new library.Modal("Edition d'un invité");
+	$('.editionLink').click(function(e) {
+		e.preventDefault();
+
+		var src = this.href + '&display=modal';
+		modalEditor.show(src);
+	});
 });

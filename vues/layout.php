@@ -19,12 +19,10 @@ include_once 'util/helpers/pager.class.php';
 			</div>
 		</div>
 
-		<div class="navbar">
-		  <div class="navbar-inner">
-		    <div class="container">
-					<?php echo $this->getNavigation(); ?>
-				</div>
-		  </div>
+		<div class="navbar navbar-inverse">
+		 	<div class="navbar-inner">
+				<?php echo $this->getNavigation(); ?>
+			</div>
 		</div>
 
 		<?php if ('' != $this->pageTitle()) { ?>

@@ -9,32 +9,32 @@ class Variables {
 
 	private static $AJAX = '__ajax__';
 
-	private $m_get;
-	private $m_post;
-	private $m_ajax;
-	private $m_flash;
-	private $m_isAjaxRequest;
+	private $_get;
+	private $_post;
+	private $_ajax;
+	private $_flash;
+	private $_isAjaxRequest;
 
 	public function __construct() {
 		if ((isset($_POST[self::$AJAX]) && '1'==$_POST[self::$AJAX])
 		 || (isset($_GET[self::$AJAX]) && '1'==$_GET[self::$AJAX])) {
-			$this->m_ajax = Variables::secureVars(array_merge_recursive($_POST, $_GET));
-			$this->m_get = array();
-			$this->m_post = array();
-			$this->m_isAjaxRequest = true;
+			$this->_ajax = Variables::secureVars(array_merge_recursive($_POST, $_GET));
+			$this->_get = array();
+			$this->_post = array();
+			$this->_isAjaxRequest = true;
 		}
 		else {
-			$this->m_get = Variables::secureVars($_GET);
-			$this->m_post = Variables::secureVars($_POST);
-			$this->m_ajax = array();
-			$this->m_isAjaxRequest = false;
+			$this->_get = Variables::secureVars($_GET);
+			$this->_post = Variables::secureVars($_POST);
+			$this->_ajax = array();
+			$this->_isAjaxRequest = false;
 		}
 
-		$this->m_flash = array();
+		$this->_flash = array();
 		foreach ($_SESSION as $key => $value) {
 			$parts = array();
 			if (preg_match("#^".self::$FLASH."([a-zA-Z_].+)$#", $key, $parts)) {
-				$this->m_flash[$parts[1]] = $value;
+				$this->_flash[$parts[1]] = $value;
 				unset($_SESSION[$key]);
 			}
 		}
@@ -59,44 +59,63 @@ class Variables {
 	}
 
 	public function post($name, $type='') {
-		return $this->getVar($this->m_post, $name, $type);
+		return $this->getVar($this->_post, $name, $type);
 	}
 
 	public function get($name, $type='') {
-		return $this->getVar($this->m_get, $name, $type);
+		return $this->getVar($this->_get, $name, $type);
 	}
 
 	public function ajax($name, $type='') {
-		return $this->getVar($this->m_ajax, $name, $type);
+		return $this->getVar($this->_ajax, $name, $type);
 	}
 
 	public function flash($name, $type='') {
-		return $this->getVar($this->m_flash, $name, $type);
+		return $this->getVar($this->_flash, $name, $type);
 	}
 
 	public function setFlash($key, $value) {
 		return $_SESSION["flash_".$key] = $value;
 	}
 
-	public function isAjaxRequest() {	return $this->m_isAjaxRequest;	}
+	public function isAjaxRequest() {	return $this->_isAjaxRequest;	}
+
+	public function has($key, $type = 'all') {
+		switch ($type) {
+			case 'get':
+				return array_key_exists($key, $this->_get);
+
+			case 'post':
+				return array_key_exists($key, $this->_post);
+
+			case 'ajax':
+				return array_key_exists($key, $this->_ajax);
+
+			case 'flash':
+				return false;
+
+			default:
+				return in_array($key, array_merge($this->_get, $this->_post, $this->_ajax));
+		} 
+	}
 
 	public function hasVars($type=NULL) {
 		switch ($type) {
 			case 'get':
-				return !empty($this->m_get);
+				return !empty($this->_get);
 
 			case 'post':
-				return !empty($this->m_post);
+				return !empty($this->_post);
 
 			case 'ajax':
-				return !empty($this->m_ajax);
+				return !empty($this->_ajax);
 
 			case 'flash':
-				return !empty($this->m_flash);
+				return !empty($this->_flash);
 
 			default:
-				return !(empty($this->m_post) && empty($this->m_get)
-					&& empty($this->m_ajax) && empty($this->m_flash));
+				return !(empty($this->_post) && empty($this->_get)
+					&& empty($this->_ajax) && empty($this->_flash));
 		}
 	}
 
@@ -149,8 +168,8 @@ class Variables {
 	public function renderMessages($type, $titre, $class) {
 		$messages = '';
 
-		if (isset($this->m_flash[$type])) {
-			foreach ($this->m_flash[$type] as $message) {
+		if (isset($this->_flash[$type])) {
+			foreach ($this->_flash[$type] as $message) {
 				$messages.= "<p class=\"alert $class\">
 				<button class=\"close\" data-dismiss=\"alert\">×</button>
 				<strong>$titre : </strong>$message

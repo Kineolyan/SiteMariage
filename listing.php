@@ -6,6 +6,7 @@ $page = new Pager('Listing');
 $page->headerTitle('Liste des invités');
 $page->pageTitle('Liste des invités');
 $page->addCss('css/liste.css');
+$page->addCss('css/modal.css');
 
 if ($VARS->isAjaxRequest()) {
 	switch ($VARS->ajax('action')) {
@@ -30,21 +31,29 @@ if ($VARS->isAjaxRequest()) {
 
 	$page->renderAjax();
 }
-else {
-	$page->title = 'Invités';
-	$page->pageTitle = 'Liste des invités';
+else if (Pager::isModal()) {
+	echo "<div class='row'>{$VARS->afficherMessages()}</div>";
 
-// 	$page->sousMenu(array(
-// 			'Actions' => array(
-// 				'listing.php?view=liste' => 'Liste',
-// 				'listing.php?view=registration' => 'Enregistrement'
-// 			),
-// 			'1' => 'divider',
-// 			'Raccourcis' => array(
-// 				'listing.php?view=listePerso' => 'Mes inscriptions'
-// 			)
-// 		));
-?>
+	$liste = new Liste();
+	$liste->gererSoumission();
+	// Affichage d'une vue
+	switch ($VARS->get('view')) {
+	case 'edition':
+		echo $liste->editionView();
+		break;
+
+	case 'registration':
+	case 'listePerso':
+	case 'categories':
+	case 'faire-part':
+	case 'liste':
+	default:
+		break;
+	}
+
+	$page->render('layout_modal.php');
+}
+else { ?>
 <div class="span2">
 	<ul class="nav nav-list">
 		<li class="nav-header">
@@ -109,8 +118,8 @@ else {
 	}
 ?>
 </div>
-<?php
+<?php 
 	$page->render();
-}
+} // ni modal, ni ajax
 
 ?>
