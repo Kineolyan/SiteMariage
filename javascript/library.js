@@ -210,6 +210,14 @@ var library  = {
 		
 		// Envoi de la requête
 		jQuery.ajax(actions);
+	},
+
+	activerTab: function(tabSelector) {
+		var tab = window.location.hash;
+		if ("" != tab) {
+			console.log(tabSelector + ' a[href="' + tab + '"]');
+			$(tabSelector + ' a[href="' + tab + '"]').tab('show');
+		}
 	}
 }
 
