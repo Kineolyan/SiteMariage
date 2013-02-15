@@ -119,6 +119,20 @@ class Variables {
 		}
 	}
 
+	public function setDefaultGet($name, $value) {
+		$this->setDefaultValue($this->_get, $name, $value);
+	}
+
+	public function setDefaultPost($name, $value) {
+		$this->setDefaultValue($this->_post, $name, $value);
+	}
+
+	private function setDefaultValue(&$vars, $name, $value) {
+		if (!array_key_exists($name, $vars)) {
+			$vars[$name] = $value;
+		}
+	}
+
 	private function getVar(&$array, $name, $type) {
 		if (isset($array[$name])) {
 			return $this->format($array[$name], $type);
