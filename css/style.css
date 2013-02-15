@@ -24,6 +24,22 @@ input[type="submit"].btn {
 	margin-top: 10px;
 }
 
+.hidden {
+	display: none !important;
+}
+
+#loadedItems {
+	padding: 10px 5px 10px;
+}
+
+.icon-loading {
+	background-image: url(../data/ajax-loader.gif);
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	height: 16px;
+	width: 19px;
+}
+
 /* -- Redefined styles -- */
 
 .container .nav {

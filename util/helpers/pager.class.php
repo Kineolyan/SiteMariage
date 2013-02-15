@@ -117,6 +117,16 @@ class Pager {
 		}
 		$menu .= '</ul>';
 
+		$menu .= <<<LOADING_BAR
+<ul class="nav pull-right hidden" id="loadingBar">
+	<li class="divider-vertical"></li>
+	<li id="loadedItems" class="dropdown">
+		<i class="loadingState"></i>
+		<ul class="dropdown-menu"></ul>
+	</li>
+</ul>'
+LOADING_BAR;
+
 		return $menu;
 	}
 
