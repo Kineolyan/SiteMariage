@@ -25,6 +25,13 @@ $page->addCss('css/accueil.css');
 		<li>nous vous conseillons une liste d'hôtels à proximité de la salle de réception;</li>
 		<li>des informations pratiques sur l'organisation de la soirée</li>
 	</ul>
+
+	En un clic :
+	<ul>
+		<li>Toutes les adresses du mariage, c'est <?php echo Html::link('ici', 'infos.php', array('tab' => 'venir')); ?></li>
+		<li>La liste de mariage est <?php echo Html::link('là', 'infos.php', array('tab' => 'liste')); ?></li>
+	</ul>
+
 </p>
 
 <?php
