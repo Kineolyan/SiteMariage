@@ -212,6 +212,24 @@ var library  = {
 		jQuery.ajax(actions);
 	},
 
+	Loader: function(itemsToLoad) {
+		this.loadingItems = $("#loadedItems");
+		this.items = {};
+
+		var liste = this.loadingItems.find('ul:first');
+		for (index in itemsToLoad) {
+			var element = itemsToLoad[index];
+			var item = new this.Item(element);
+			this.items[element] = item;
+			liste.append(item.html);
+		}
+
+		this.loadingItems.find('.loadingState')
+			.addClass('icon-loading')
+			.dropdown();
+		$('#loadingBar').removeClass('hidden');
+	},
+
 	activerTab: function(tabSelector) {
 		var tab = window.location.hash;
 		if ("" != tab) {
@@ -310,5 +328,39 @@ library.Modal.prototype = {
 	close: function() {
 		this.frame.attr('src', 'about:blank');
 		this.element.addClass('hide fade');
+	}
+};
+
+library.Loader.prototype = {
+	constructor: library.Loader,
+
+	load: function(element) {
+		this.items[element].load();
+
+		for (item in this.items) {
+			if (!this.items[item].loaded) {
+				return;
+			}
+		}
+
+		this.loadingItems.find('.loadingState')
+			.removeClass('icon-loading')
+			.addClass('icon-ok');
+	},
+
+	Item: function(element) {
+		this.loaded = false;
+		this.html = $('<li>').html('<i class="loadingState icon-loading"></i>' + element);
+	}
+};
+
+library.Loader.prototype.Item.prototype = {
+	constructor: library.Loader.prototype.Item,
+
+	load: function() {
+		this.loaded = true;
+		this.html.find('.loadingState')
+			.removeClass('icon-loading')
+			.addClass('icon-ok');
 	}
 };
