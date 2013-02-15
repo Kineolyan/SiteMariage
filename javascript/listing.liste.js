@@ -32,11 +32,19 @@ function creerSelectionCategories() {
 	});
 }
 
+var loader = null;
 $(function() {
+	loader = new library.Loader(
+		['Statut updater', 'Filtre nom', 'Filtre catégories', 'Live editor']);
+
 	$('.btn-group li').click(majStatut);
+	loader.load('Statut updater');
 	
 	new library.Filtre($('#searchBar'), $('#invites tbody tr'), 'itemData');
+	loader.load('Filtre nom');
+
 	creerSelectionCategories();
+	loader.load('Filtre catégories');
 
 	var modalEditor = new library.Modal("Edition d'un invité");
 	$('.editionLink').click(function(e) {
@@ -45,4 +53,5 @@ $(function() {
 		var src = this.href + '&display=modal';
 		modalEditor.show(src);
 	});
+	loader.load('Live editor');
 });

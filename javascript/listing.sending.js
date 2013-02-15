@@ -30,7 +30,11 @@ function recuperer(element) {
 }
 
 $(function() {
+	var loader = new library.Loader(['Filtre catégories']);
+
 	$('.movingEntry').click(moveEntry);
 
 	new library.Filtre($('#searchBar'), $('.movingEntry'));
+
+	loader.load('Filtre catégories');
 })
