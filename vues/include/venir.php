@@ -7,9 +7,9 @@
 
 <h2>L'église : la presque cathédrale <i>Notre Dame du Chêne</i></h2>
 <p>
-  Le mariage aura lieu au Domaine de Brunel, près de Drocourt.<br/>
+  Le mariage religieux sera célébré dans l'église de Notre Dame du Chêne.<br/>
   Adresse : 28 Rue Rieussec, 78220 Viroflay.<br/>
-  Pareillement, il y a quelques places autour de l'église. De plus, le coin est en travaux, suite à la création de la ligne de tram T6. Il y a quand même des rues autour dans lesquelles vous pourrez vous garer.
+  Pareillement, il y a quelques places autour de l'église, mais elles sont réservées et donc indisponibles. De plus, le coin est en travaux, suite à la création de la ligne de tram T6. Il y a quand même des rues autour dans lesquelles vous pourrez vous garer.
 </p>
 
 <h2>Réception au merveilleux <i>Domaine de Brunel</i></h2>
