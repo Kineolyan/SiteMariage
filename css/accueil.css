@@ -13,3 +13,7 @@
 	-moz-transform: rotate(-10deg);
 	-webkit-transform: rotate(-10deg);
 }
+
+#oneClickZone {
+	width: 300px;
+}

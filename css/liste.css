@@ -70,13 +70,13 @@ ul.dropdown-menu li {
 .icon-avecPlusUn {
 	background-image: url(../data/sprites.png);
 	background-position: 0px 0px;
-	width: 19px
+	width: 19px;
 }
 
 .icon-plusUn {
 	background-image: url(../data/sprites.png);
 	background-position: -19px 0px;
-	width: 19px
+	width: 19px;
 }
 
 .icon-faire-part {

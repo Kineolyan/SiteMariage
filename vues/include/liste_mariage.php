@@ -17,10 +17,8 @@
 <p>
 	La procédure se fait intégralement en ligne, sur le site <?php echo Html::link('listes.printemps.com', 'http://listes.printemps.com'); ?>.<br/>
 	Pour un accès direct au formulaire pour faire un cadeau, c'est via le lien qui suit : 
-		<?php echo Html::link('Faire un cadeau', 'http://listes-mariage.printemps.com/espace_invites/dons_recherche.aspx', array('title' => 'Accès direct à notre liste')); ?>.
-	En cas de problème, reportez-vous à la <?php echo Html::link('procédure détaillée', '#procedure_detaillee'); ?>.<br/>
-	Là, indiquez la date du mariage, le <b>13 avril 2013</b>, et <b>Peyrusse</b> comme nom.<br/>
-	Ca y est, vous avez accès à la liste !<br/>
+		<?php echo Html::link('Faire un cadeau', 'http://listes.printemps.com/espace_invites/dons_liste_comp.aspx?dossier=16084883', array('title' => 'Accès direct à notre liste')); ?>.	Ca y est, vous y êtes !<br/>
+  En cas de problème, reportez-vous à la <?php echo Html::link('procédure détaillée', '#procedure_detaillee'); ?>.<br/>
 	Merci beaucoup d'avance pour vos cadeaux.
 </p>
 
