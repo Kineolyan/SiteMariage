@@ -43,6 +43,12 @@ input[type="submit"].btn {
 	-moz-border-bottom-right-radius: 5px;
 }
 
+.alert-info a,
+.alert-info a:hover,
+.alert-info a:visited {
+	color: #040488;
+}
+
 /* -- Stats -- */
 
 /* -- Admin -- */
